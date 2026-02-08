@@ -7,6 +7,9 @@ interface EnvConfig {
     APP_URL: string;
     CORS_ORIGIN: string[];
     PORT: number;
+    CLERK_PUBLISHABLE_KEY: string;
+    CLERK_SECRET_KEY: string;
+    CLERK_WEBHOOK_SIGNING_SECRET: string;
 }
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -27,4 +30,7 @@ export const env: EnvConfig = {
     PORT: parseInt(getEnvVar("PORT", "3000"), 10),
     CORS_ORIGIN: getEnvArray("CORS_ORIGIN", "*"),
     APP_URL: getEnvVar("APP_URL", "http://localhost:3000"),
+    CLERK_PUBLISHABLE_KEY: getEnvVar("CLERK_PUBLISHABLE_KEY"),
+    CLERK_SECRET_KEY: getEnvVar("CLERK_SECRET_KEY"),
+    CLERK_WEBHOOK_SIGNING_SECRET: getEnvVar("CLERK_WEBHOOK_SIGNING_SECRET")
 };

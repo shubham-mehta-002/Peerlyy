@@ -3,6 +3,8 @@ import cors from 'cors';
 import { env } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/index.js';
 import authRoutes from "./modules/auth/auth.routes.js"
+import { clerkMiddleware } from '@clerk/express'
+import webhookRoutes from "./modules/auth/webhook.routes.js";
 
 const app: Application = express();
 
@@ -14,9 +16,18 @@ app.use(
     })
 );
 
+app.use(
+    "/api/webhooks/clerk",
+    express.raw({ type: "application/json" }),
+    webhookRoutes
+)
+
+
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+app.use(clerkMiddleware())
 
 app.use("/api/auth", authRoutes);
 
