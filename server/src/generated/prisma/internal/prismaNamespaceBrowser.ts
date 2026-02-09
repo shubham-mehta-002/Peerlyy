@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   College: 'College',
+  CollegeDomain: 'CollegeDomain',
   User: 'User'
 } as const
 
@@ -74,11 +75,21 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const CollegeScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  domain: 'domain',
+  campus: 'campus',
+  domainId: 'domainId',
   createdAt: 'createdAt'
 } as const
 
 export type CollegeScalarFieldEnum = (typeof CollegeScalarFieldEnum)[keyof typeof CollegeScalarFieldEnum]
+
+
+export const CollegeDomainScalarFieldEnum = {
+  id: 'id',
+  domain: 'domain',
+  createdAt: 'createdAt'
+} as const
+
+export type CollegeDomainScalarFieldEnum = (typeof CollegeDomainScalarFieldEnum)[keyof typeof CollegeDomainScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

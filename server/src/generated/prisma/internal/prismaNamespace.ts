@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   College: 'College',
+  CollegeDomain: 'CollegeDomain',
   User: 'User'
 } as const
 
@@ -401,7 +402,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "college" | "user"
+    modelProps: "college" | "collegeDomain" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -476,6 +477,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CollegeCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CollegeCountAggregateOutputType> | number
+        }
+      }
+    }
+    CollegeDomain: {
+      payload: Prisma.$CollegeDomainPayload<ExtArgs>
+      fields: Prisma.CollegeDomainFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CollegeDomainFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CollegeDomainFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>
+        }
+        findFirst: {
+          args: Prisma.CollegeDomainFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CollegeDomainFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>
+        }
+        findMany: {
+          args: Prisma.CollegeDomainFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>[]
+        }
+        create: {
+          args: Prisma.CollegeDomainCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>
+        }
+        createMany: {
+          args: Prisma.CollegeDomainCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CollegeDomainCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>[]
+        }
+        delete: {
+          args: Prisma.CollegeDomainDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>
+        }
+        update: {
+          args: Prisma.CollegeDomainUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>
+        }
+        deleteMany: {
+          args: Prisma.CollegeDomainDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CollegeDomainUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CollegeDomainUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>[]
+        }
+        upsert: {
+          args: Prisma.CollegeDomainUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollegeDomainPayload>
+        }
+        aggregate: {
+          args: Prisma.CollegeDomainAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCollegeDomain>
+        }
+        groupBy: {
+          args: Prisma.CollegeDomainGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollegeDomainGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CollegeDomainCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollegeDomainCountAggregateOutputType> | number
         }
       }
     }
@@ -595,11 +670,21 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const CollegeScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  domain: 'domain',
+  campus: 'campus',
+  domainId: 'domainId',
   createdAt: 'createdAt'
 } as const
 
 export type CollegeScalarFieldEnum = (typeof CollegeScalarFieldEnum)[keyof typeof CollegeScalarFieldEnum]
+
+
+export const CollegeDomainScalarFieldEnum = {
+  id: 'id',
+  domain: 'domain',
+  createdAt: 'createdAt'
+} as const
+
+export type CollegeDomainScalarFieldEnum = (typeof CollegeDomainScalarFieldEnum)[keyof typeof CollegeDomainScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -811,6 +896,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   college?: Prisma.CollegeOmit
+  collegeDomain?: Prisma.CollegeDomainOmit
   user?: Prisma.UserOmit
 }
 

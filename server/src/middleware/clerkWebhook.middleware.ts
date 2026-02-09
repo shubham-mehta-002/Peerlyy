@@ -61,6 +61,24 @@ export const handleUserCreated = async (
             return res.status(200).json({ received: true, message: 'User already exists' });
         }
 
+        // Validate college email domain
+        const domain = email.split('@')[1];
+        const college = await prisma.college.findUnique({
+            where: { domain }
+        });
+
+        if (!college) {
+            console.warn(`Rejected signup for non-college email: ${email}`);
+            // In a real scenario, you might want to delete the user from Clerk here using their Admin SDK
+            // await clerkClient.users.deleteUser(clerkId);
+            return res.status(400).json({
+                success: false,
+                message: 'Email domain not authorized. Please use your college email.'
+            });
+        }
+
+        // Check if email already exists
+
         // Check if email already exists
         const emailExists = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
         if (emailExists) {
@@ -72,7 +90,9 @@ export const handleUserCreated = async (
         await prisma.user.create({
             data: {
                 clerkId,
-                email: email.toLowerCase()
+                email: email.toLowerCase(),
+                collegeId: college.id,
+                role: "STUDENT" // Default role
             }
         })
 
