@@ -25,9 +25,22 @@ import {
 } from "@/components/ui/hover-card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { useSendRegisterOtpMutation } from "@/hooks"
+import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
 
 
-export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signupFormSchema>) => void }) {
+
+type SendRegisterOtpMutation = ReturnType<typeof useSendRegisterOtpMutation>
+
+type SignUpFormProps = {
+    onSubmit: (data: z.infer<typeof signupFormSchema>) => void
+    sendRegisterOtpMutation: SendRegisterOtpMutation
+}
+
+
+
+export function SignUpForm({ onSubmit, sendRegisterOtpMutation }: SignUpFormProps) {
     const form = useForm<z.infer<typeof signupFormSchema>>({
         resolver: zodResolver(signupFormSchema),
         defaultValues: {
@@ -36,6 +49,10 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
             confirmPassword: "",
         },
     })
+
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
 
     return (
         <>
@@ -93,14 +110,23 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
                                         </HoverCardContent>
                                     </HoverCard>
                                 </FieldLabel>
-                                <InputGroup>
+                                <InputGroup className="relative">
                                     <Input
                                         {...field}
+                                        type={showPassword ? "text" : "password"}
                                         id="form-rhf-demo-password"
                                         placeholder="Enter your password"
-
                                     />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
                                 </InputGroup>
+
                                 {fieldState.invalid && (
                                     <FieldError errors={[fieldState.error]} />
                                 )}
@@ -115,14 +141,23 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
                                 <FieldLabel htmlFor="form-rhf-demo-confirmPassword">
                                     Confirm Password
                                 </FieldLabel>
-                                <InputGroup>
+                                <InputGroup className="relative">
                                     <Input
                                         {...field}
+                                        type={showConfirmPassword ? "text" : "password"}
                                         id="form-rhf-demo-confirmPassword"
                                         placeholder="Confirm your password"
-
                                     />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                        className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
                                 </InputGroup>
+
                                 {fieldState.invalid && (
                                     <FieldError errors={[fieldState.error]} />
                                 )}
@@ -130,7 +165,14 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
                         )}
                     />
 
-                    <Button className="py-3"><p className="cursor-pointer text-sm text-shadow-muted-foreground">Signup</p></Button>
+                    <Button
+                        type="submit"
+                        className="py-3"
+                        disabled={sendRegisterOtpMutation.isPending}
+                    >
+                        {sendRegisterOtpMutation.isPending ? "Sending OTP..." : "Send OTP"}
+                    </Button>
+
 
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">

@@ -689,8 +689,14 @@ export type CollegeDomainScalarFieldEnum = (typeof CollegeDomainScalarFieldEnum)
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  clerkId: 'clerkId',
   email: 'email',
+  password: 'password',
+  provider: 'provider',
+  googleId: 'googleId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  isVerified: 'isVerified',
+  isProfileComplete: 'isProfileComplete',
   collegeId: 'collegeId',
   role: 'role',
   status: 'status',
@@ -756,6 +762,27 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AuthProvider'
+ */
+export type EnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthProvider'>
+    
+
+
+/**
+ * Reference to a field of type 'AuthProvider[]'
+ */
+export type ListEnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthProvider[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

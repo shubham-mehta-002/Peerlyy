@@ -3,8 +3,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { SignUpForm, OTPInput, FormHeader } from "../components";
 import { useState } from "react";
-import { signupFormSchema } from "../validators/signup.js";
+import { signupFormSchema } from "../validators/signup";
 import { z } from "zod";
+import { useSendRegisterOtpMutation, useVerifyRegisterOtpMutation } from "@/hooks"
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
     const [formStep, setFormStep] = useState(1);
@@ -13,15 +16,44 @@ export default function SignUpPage() {
         password: ""
     })
 
+    const sendRegisterOtpMutation = useSendRegisterOtpMutation();
+    const verifyRegisterOtpMutation = useVerifyRegisterOtpMutation();
+    const router = useRouter();
+
     const handleSendOtp = (data: z.infer<typeof signupFormSchema>) => {
-        console.log(data)
         setSignupData(data)
-        setFormStep(2)
+        sendRegisterOtpMutation.mutate({ email: data.email }, {
+            onSuccess: (data: any) => {
+                toast.success(data?.message || "OTP Sent successfully!!")
+                setFormStep(2)
+            }
+        })
     }
 
+    const handleResendOtp = () => {
+        if (!signupData?.email) {
+            toast.error("Email not found. Please restart signup.");
+            return;
+        }
+
+        sendRegisterOtpMutation.mutate(
+            { email: signupData.email },
+            {
+                onSuccess: (data: any) => {
+                    toast.success(data?.message || "OTP Sent successfully!!");
+                },
+            }
+        );
+    };
+
+
     const handleVerifyOtp = (otp: string) => {
-        console.log(otp);
-        console.log({ signupData })
+        verifyRegisterOtpMutation.mutate({ email: signupData.email, otp, password: signupData.password }, {
+            onSuccess: (data: any) => {
+                toast.success(data?.message || "OTP Verified successfully!!")
+                router.push("/auth/login")
+            }
+        })
     }
 
     return (
@@ -29,7 +61,9 @@ export default function SignUpPage() {
             <Card className="w-full sm:max-w-md">
                 <FormHeader description={formStep === 1 ? "Create a new account" : "Verify your email address"} />
                 <CardContent>
-                    {formStep === 1 ? <SignUpForm onSubmit={handleSendOtp} /> : <OTPInput onSubmit={handleVerifyOtp} />}
+                    {formStep === 1 ? <SignUpForm onSubmit={handleSendOtp} sendRegisterOtpMutation={sendRegisterOtpMutation} />
+                        :
+                        <OTPInput onSubmit={handleVerifyOtp} verifyRegisterOtpMutation={verifyRegisterOtpMutation} handleResendOtp={handleResendOtp} />}
                 </CardContent>
             </Card>
         </div>

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../../../config/prisma.js";
 import { asyncHandler } from "../../../utils/asyncHandler.js";
-import { AppError } from "../../../utils/AppError.js";
-
+import { ApiResponse } from "../../../utils/apiResponse.js";
+import { HTTP_STATUS } from "../../../constants/index.js";
 
 export const createCollegeDomain = asyncHandler(async (req: Request, res: Response) => {
     const { domain } = req.body;
@@ -12,16 +12,12 @@ export const createCollegeDomain = asyncHandler(async (req: Request, res: Respon
     });
 
     if (exists) {
-        throw new AppError("Domain already exists", 409);
+        return ApiResponse.error(res, "Domain already exists", HTTP_STATUS.CONFLICT);
     }
 
     const record = await prisma.collegeDomain.create({
         data: { domain }
     });
 
-    res.status(201).json({
-        success: true,
-        data: record
-    });
+    return ApiResponse.success(res, record, "Domain created successfully", HTTP_STATUS.CREATED);
 });
-

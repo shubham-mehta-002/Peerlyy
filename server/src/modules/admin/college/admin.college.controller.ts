@@ -2,6 +2,8 @@ import { asyncHandler } from "../../../utils/asyncHandler.js";
 import { AppError } from "../../../utils/AppError.js";
 import { Request, Response } from "express";
 import { prisma } from "../../../config/prisma.js";
+import { ApiResponse } from "../../../utils/apiResponse.js";
+import { HTTP_STATUS } from '../../../constants/index.js';
 
 export const createCollege = asyncHandler(async (req: Request, res: Response) => {
     const { name, campus, domainId } = req.body;
@@ -11,7 +13,7 @@ export const createCollege = asyncHandler(async (req: Request, res: Response) =>
     });
 
     if (!domainExists) {
-        throw new AppError("Invalid domain", 404);
+        throw new AppError("Invalid domain", HTTP_STATUS.BAD_REQUEST);
     }
 
     const college = await prisma.college.create({
@@ -22,10 +24,7 @@ export const createCollege = asyncHandler(async (req: Request, res: Response) =>
         }
     });
 
-    res.status(201).json({
-        success: true,
-        data: college
-    });
+    return ApiResponse.success(res, college, "College created successfully", HTTP_STATUS.CREATED);
 });
 
 
@@ -40,13 +39,10 @@ export const getCollegesByDomain = asyncHandler(async (req: Request, res: Respon
     });
 
     if (!record) {
-        throw new AppError("Domain not allowed", 403);
+        throw new AppError("Domain not allowed", HTTP_STATUS.FORBIDDEN);
     }
 
-    res.status(200).json({
-        success: true,
-        data: record.colleges
-    });
+    return ApiResponse.success(res, record.colleges, "Colleges fetched successfully", HTTP_STATUS.OK);
 });
 
 export const updateCollege = asyncHandler(async (req: Request, res: Response) => {
@@ -57,10 +53,7 @@ export const updateCollege = asyncHandler(async (req: Request, res: Response) =>
         data: req.body
     });
 
-    res.status(200).json({
-        success: true,
-        data: college
-    });
+    return ApiResponse.success(res, college, "College updated successfully", HTTP_STATUS.OK);
 });
 
 export const deleteCollege = asyncHandler(async (req: Request, res: Response) => {
@@ -70,8 +63,5 @@ export const deleteCollege = asyncHandler(async (req: Request, res: Response) =>
         where: { id }
     });
 
-    res.status(200).json({
-        success: true,
-        message: "College deleted successfully"
-    });
+    return ApiResponse.success(res, null, "College deleted successfully", HTTP_STATUS.OK);
 });

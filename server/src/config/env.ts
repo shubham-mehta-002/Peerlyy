@@ -7,9 +7,17 @@ interface EnvConfig {
     APP_URL: string;
     CORS_ORIGIN: string[];
     PORT: number;
-    CLERK_PUBLISHABLE_KEY: string;
-    CLERK_SECRET_KEY: string;
-    CLERK_WEBHOOK_SIGNING_SECRET: string;
+    JWT_ACCESS_SECRET: string;
+    JWT_REFRESH_SECRET: string;
+    GOOGLE_CLIENT_ID: string;
+    SMTP_HOST: string;
+    SMTP_PORT: number;
+    SMTP_USER: string;
+    SMTP_PASS: string;
+    REDIS_URL: string;
+    OTP_EXPIRY_SECONDS: number;
+    OTP_RATE_LIMIT_WINDOW_SECONDS: number;
+    OTP_ATTEMPT_LIMIT: number;
 }
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -30,7 +38,21 @@ export const env: EnvConfig = {
     PORT: parseInt(getEnvVar("PORT", "3000"), 10),
     CORS_ORIGIN: getEnvArray("CORS_ORIGIN", "*"),
     APP_URL: getEnvVar("APP_URL", "http://localhost:3000"),
-    CLERK_PUBLISHABLE_KEY: getEnvVar("CLERK_PUBLISHABLE_KEY"),
-    CLERK_SECRET_KEY: getEnvVar("CLERK_SECRET_KEY"),
-    CLERK_WEBHOOK_SIGNING_SECRET: getEnvVar("CLERK_WEBHOOK_SIGNING_SECRET")
+
+    // Auth
+    JWT_ACCESS_SECRET: getEnvVar("JWT_ACCESS_SECRET"),
+    JWT_REFRESH_SECRET: getEnvVar("JWT_REFRESH_SECRET"),
+    GOOGLE_CLIENT_ID: getEnvVar("GOOGLE_CLIENT_ID"),
+
+    // Email
+    SMTP_HOST: getEnvVar("SMTP_HOST"),
+    SMTP_PORT: parseInt(getEnvVar("SMTP_PORT", "587"), 10),
+    SMTP_USER: getEnvVar("SMTP_USER"),
+    SMTP_PASS: getEnvVar("SMTP_PASS"),
+
+    // Redis
+    REDIS_URL: getEnvVar("REDIS_URL"),
+    OTP_ATTEMPT_LIMIT: parseInt(getEnvVar("OTP_ATTEMPT_LIMIT", "5"), 10),
+    OTP_EXPIRY_SECONDS: parseInt(getEnvVar("OTP_EXPIRY_SECONDS", "600"), 10),
+    OTP_RATE_LIMIT_WINDOW_SECONDS: parseInt(getEnvVar("OTP_RATE_LIMIT_WINDOW_SECONDS", "60"), 10)
 };

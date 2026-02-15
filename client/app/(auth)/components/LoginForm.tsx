@@ -40,10 +40,11 @@ export const LoginForm = ({ form, onSubmit }: { form: ReturnType<typeof useForm<
                         <Controller
                             name="password"
                             control={form.control}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <Field>
-                                    <FieldLabel htmlFor="form-rhf-demo-password" className="flex">
+                                    <FieldLabel htmlFor="form-rhf-demo-password" className="flex justify-between">
                                         Password
+                                        <Link href="/forgot-password" className="underline text-primary"> Forgot Passsword ?</Link>
                                     </FieldLabel>
                                     <InputGroup>
                                         <Input

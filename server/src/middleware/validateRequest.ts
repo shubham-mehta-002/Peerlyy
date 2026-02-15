@@ -5,14 +5,13 @@ import { AppError } from "../utils/AppError.js";
 export const validateRequest = (schema: ZodObject<ZodRawShape>) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync({
-                body: req.body,
-                query: req.query,
-                params: req.params,
-            });
-
+            const result = schema.safeParse(req);
+            if (!result.success) {
+                throw result.error;
+            }
             next();
         } catch (error) {
+            console.log({ error })
             if (error instanceof ZodError) {
                 const errorMessage = error.issues
                     .map((e) => `${e.path.join(".")}: ${e.message}`)

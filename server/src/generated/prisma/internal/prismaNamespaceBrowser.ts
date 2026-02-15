@@ -94,8 +94,14 @@ export type CollegeDomainScalarFieldEnum = (typeof CollegeDomainScalarFieldEnum)
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  clerkId: 'clerkId',
   email: 'email',
+  password: 'password',
+  provider: 'provider',
+  googleId: 'googleId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  isVerified: 'isVerified',
+  isProfileComplete: 'isProfileComplete',
   collegeId: 'collegeId',
   role: 'role',
   status: 'status',
