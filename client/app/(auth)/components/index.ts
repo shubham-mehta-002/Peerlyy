@@ -1,3 +1,6 @@
-export { default as SignUpForm } from "./SignupForm";
-export { default as OTPInput } from "./OTPInput";
-export { default as FormHeader } from "./FormHeader";
+export { SignUpForm } from "./SignupForm";
+export { OTPInput } from "./OTPInput";
+export { FormHeader } from "./FormHeader";
+export { LoginForm } from "./LoginForm"
+export { ForgorPasswordForm } from "./ForgotPasswordForm"
+export { ResetPasswordForm } from "./ResetPasswordForm"

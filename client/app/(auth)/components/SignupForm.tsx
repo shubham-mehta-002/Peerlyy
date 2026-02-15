@@ -48,15 +48,25 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
                             <Field>
                                 <FieldLabel htmlFor="form-rhf-demo-email">
                                     Email
+                                    <HoverCard openDelay={10} closeDelay={100}>
+                                        <HoverCardTrigger asChild>
+                                            <Button variant="link">
+                                                <Badge variant="outline">i</Badge>
+                                            </Button>
+                                        </HoverCardTrigger>
+                                        <HoverCardContent className="flex w-64 flex-col gap-0.5">
+                                            <div className="font-semibold">
+                                                Only .edu email IDs are allowed.
+                                            </div>
+                                        </HoverCardContent>
+                                    </HoverCard>
                                 </FieldLabel>
                                 <Input
                                     {...field}
                                     id="form-rhf-demo-email"
                                     placeholder="Your college email ID"
+
                                 />
-                                <FieldDescription>
-                                    Only .edu email IDs are allowed.
-                                </FieldDescription>
                                 {fieldState.invalid && (
                                     <FieldError errors={[fieldState.error]} />
                                 )}
@@ -88,6 +98,7 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
                                         {...field}
                                         id="form-rhf-demo-password"
                                         placeholder="Enter your password"
+
                                     />
                                 </InputGroup>
                                 {fieldState.invalid && (
@@ -109,6 +120,7 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
                                         {...field}
                                         id="form-rhf-demo-confirmPassword"
                                         placeholder="Confirm your password"
+
                                     />
                                 </InputGroup>
                                 {fieldState.invalid && (
@@ -138,14 +150,12 @@ export function SignUpForm({ onSubmit }: { onSubmit: (data: z.infer<typeof signu
                         <p className="cursor-pointer text-sm text-shadow-muted-foreground">Signup using Google</p>
                     </Button>
 
-                    <p className="text-center text-sm text-shadow-muted-foreground mt-4">Already have an account? <Link href="/login" className="underline text-primary">Login</Link></p>
 
 
                 </FieldGroup>
+                <p className="text-center text-sm text-shadow-muted-foreground mt-4">Already have an account? <Link href="/login" className="underline text-primary">Login</Link></p>
             </form>
         </>
     )
 }
 
-
-export default SignUpForm

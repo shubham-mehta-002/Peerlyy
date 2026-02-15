@@ -79,4 +79,3 @@ export function OTPInput({ onSubmit }: { onSubmit: (data: string) => void }) {
     )
 }
 
-export default OTPInput

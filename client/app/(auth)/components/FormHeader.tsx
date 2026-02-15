@@ -10,6 +10,3 @@ export const FormHeader = ({ description }: { description: string }) => {
         </CardHeader>
     )
 }
-
-
-export default FormHeader;
