@@ -10,8 +10,8 @@ type ForgotPasswordPayload = {
 export const useForgotPasswordMutation = () => {
     return useMutation({
         mutationFn: (payload: ForgotPasswordPayload) => authServices.forgotPassword(payload.email),
-        onError: (error: Error) => {
-            toast.error(error.message || "Something went wrong");
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || "Something went wrong");
         }
     })
 }

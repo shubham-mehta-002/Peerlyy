@@ -9,8 +9,8 @@ type SendRegisterOtpPayload = {
 export const useSendRegisterOtpMutation = () => {
     return useMutation({
         mutationFn: (data: SendRegisterOtpPayload) => authServices.sendRegisterOtp(data.email),
-        onError: (error: Error) => {
-            toast.error(error.message || "Something went wrong");
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || "Something went wrong");
         }
     })
 }

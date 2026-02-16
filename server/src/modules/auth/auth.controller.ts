@@ -15,7 +15,20 @@ import { ApiResponse } from "../../utils/apiResponse.js";
 
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
+const generateAccessAndRefreshTokens = async (userId: string, role: string) => {
+    // const user = await prisma.user.findUnique({ where: { id: userId } });
+    // if (!user) throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
 
+    const accessToken = generateAccessToken(userId, role);
+    const refreshToken = generateRefreshToken(userId, role);
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken }
+    })
+
+    return { accessToken, refreshToken };
+}
 // Some helper functions ...
 const generateOtp = () => {
     const otp = crypto.randomInt(100000, 999999).toString();
@@ -116,129 +129,110 @@ export const registerComplete = asyncHandler(async (req: Request, res: Response)
         },
     });
 
-    // ✅ Cleanup
     await redis.del(key);
     await redis.del(`otp:attempts:${email}`);
 
-    const accessToken = generateAccessToken(user.id, user.role);
-    const refreshToken = generateRefreshToken(user.id);
+    return ApiResponse.success(res, null, "User registered successfully", HTTP_STATUS.OK);
+});
+
+
+export const login = asyncHandler(async (req: Request, res: Response) => {
+    const email = getNormalizedEmail(req.body.email);
+    const { password } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user || !user.id)
+        throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
+
+    const isMatch = await comparePassword(password, user.password as string);
+    if (!isMatch) throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user.id, user.role);
+
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS,
+    });
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS,
     });
 
-    return res.status(201).json({
-        success: true,
-    });
+    return ApiResponse.success(res, {}, "Logged in successfully", HTTP_STATUS.OK)
 });
 
+// export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
+//     const { idToken } = req.body;
 
-export const login = asyncHandler(async (req: Request, res: Response) => {
-    const email = req.body.email.toLowerCase().trim();
-    const { password } = req.body;
+//     const ticket = await googleClient.verifyIdToken({
+//         idToken,
+//         audience: env.GOOGLE_CLIENT_ID,
+//     });
 
-    const user = await prisma.user.findUnique({ where: { email } });
+//     const payload = ticket.getPayload();
+//     if (!payload?.email || !payload.email_verified)
+//         throw new AppError("Invalid Google token", 400);
 
-    if (!user || !user.password)
-        throw new AppError("Invalid credentials", 401);
+//     const email = payload.email.toLowerCase().trim();
+//     const googleId = payload.sub;
 
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) throw new AppError("Invalid credentials", 401);
+//     const domain = getDomain(email);
 
-    if (!user.isVerified)
-        throw new AppError("Account not verified", 403);
+//     const isWhitelisted = await prisma.collegeDomain.findUnique({ where: { domain } });
+//     if (!isWhitelisted) throw new AppError("Email domain not supported", 400);
 
-    const accessToken = generateAccessToken(user.id, user.role);
-    const refreshToken = generateRefreshToken(user.id);
+//     let user = await prisma.user.findUnique({ where: { email } });
 
-    await prisma.user.update({
-        where: { id: user.id },
-        data: { refreshToken }
-    });
+//     if (!user) {
+//         const collegeDomain = await prisma.collegeDomain.findUnique({
+//             where: { domain },
+//             include: { colleges: true }
+//         });
 
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+//         const collegeId = collegeDomain?.colleges?.[0]?.id ?? null;
 
-    res.json({
-        success: true,
-        accessToken,
-        user: { id: user.id, email: user.email, role: user.role }
-    });
-});
+//         user = await prisma.user.create({
+//             data: {
+//                 email,
+//                 googleId,
+//                 isVerified: true,
+//                 collegeId
+//             }
+//         });
+//     } else if (!user.googleId) {
+//         await prisma.user.update({
+//             where: { id: user.id },
+//             data: { googleId }
+//         });
+//     }
 
-export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
-    const { idToken } = req.body;
+//     const accessToken = generateAccessToken(user.id, user.role);
+//     const refreshToken = generateRefreshToken(user.id);
 
-    const ticket = await googleClient.verifyIdToken({
-        idToken,
-        audience: env.GOOGLE_CLIENT_ID,
-    });
+//     await prisma.user.update({
+//         where: { id: user.id },
+//         data: { refreshToken }
+//     });
 
-    const payload = ticket.getPayload();
-    if (!payload?.email || !payload.email_verified)
-        throw new AppError("Invalid Google token", 400);
+//     res.cookie("refreshToken", refreshToken, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === "production",
+//         sameSite: "strict",
+//         maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
 
-    const email = payload.email.toLowerCase().trim();
-    const googleId = payload.sub;
-
-    const domain = getDomain(email);
-
-    const isWhitelisted = await prisma.collegeDomain.findUnique({ where: { domain } });
-    if (!isWhitelisted) throw new AppError("Email domain not supported", 400);
-
-    let user = await prisma.user.findUnique({ where: { email } });
-
-    if (!user) {
-        const collegeDomain = await prisma.collegeDomain.findUnique({
-            where: { domain },
-            include: { colleges: true }
-        });
-
-        const collegeId = collegeDomain?.colleges?.[0]?.id ?? null;
-
-        user = await prisma.user.create({
-            data: {
-                email,
-                googleId,
-                isVerified: true,
-                collegeId
-            }
-        });
-    } else if (!user.googleId) {
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { googleId }
-        });
-    }
-
-    const accessToken = generateAccessToken(user.id, user.role);
-    const refreshToken = generateRefreshToken(user.id);
-
-    await prisma.user.update({
-        where: { id: user.id },
-        data: { refreshToken }
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    res.json({
-        success: true,
-        accessToken,
-        user: { id: user.id, email: user.email, role: user.role }
-    });
-});
+//     res.json({
+//         success: true,
+//         accessToken,
+//         user: { id: user.id, email: user.email, role: user.role }
+//     });
+// });
 
 export const requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
     const email = getNormalizedEmail(req.body.email);
@@ -283,3 +277,32 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
 
     return ApiResponse.success(res, null, "Password reset successful", HTTP_STATUS.OK);
 });
+
+export const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
+    const incomingRefreshToken = req.cookies.refreshToken;
+
+    const decodedRefreshToken = verifyRefreshToken(incomingRefreshToken);
+
+    const user = await prisma.user.findUnique({ where: { id: decodedRefreshToken.userId } });
+
+    if (!user)
+        throw new AppError("Invalid or expired refresh token", HTTP_STATUS.UNAUTHORIZED);
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user.id, user.role);
+
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS,
+    });
+
+    return ApiResponse.success(res, null, "Access token refreshed successfully", HTTP_STATUS.OK);
+})

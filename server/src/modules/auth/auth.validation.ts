@@ -56,3 +56,9 @@ export const verifyOtpSchema = z.object({
         type: z.enum(["REGISTER"]),
     }),
 });
+
+export const refreshAccessTokenSchema = z.object({
+    cookies: z.object({
+        refreshToken: z.string("Refresh token is required")
+    })
+});
