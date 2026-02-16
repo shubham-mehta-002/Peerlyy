@@ -3,6 +3,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/config/queryClient";
 import { Toaster } from "@/components/ui/sonner";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export default function Providers({
     children,
@@ -11,8 +12,10 @@ export default function Providers({
 }) {
     return (
         <QueryClientProvider client={queryClient}>
+
             {children}
             <Toaster />
+            <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     );
 }

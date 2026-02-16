@@ -57,7 +57,7 @@ export default function SignUpPage() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="flex mx-5 flex-col items-center justify-center min-h-screen">
             <Card className="w-full sm:max-w-md">
                 <FormHeader description={formStep === 1 ? "Create a new account" : "Verify your email address"} />
                 <CardContent>

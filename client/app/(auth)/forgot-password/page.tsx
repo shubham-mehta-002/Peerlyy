@@ -9,7 +9,7 @@ import { ForgorPasswordForm } from "../components";
 const ForgotPasswordPage = () => {
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="mx-5 flex flex-col items-center justify-center min-h-screen">
             <Card className="w-full sm:max-w-md">
                 <FormHeader description="Forget Password" />
                 <CardContent>
