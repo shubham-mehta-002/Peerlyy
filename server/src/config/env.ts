@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { parse } from "node:path";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ interface EnvConfig {
     OTP_EXPIRY_SECONDS: number;
     OTP_RATE_LIMIT_WINDOW_SECONDS: number;
     OTP_ATTEMPT_LIMIT: number;
+    RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS: number;
 }
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -54,5 +56,6 @@ export const env: EnvConfig = {
     REDIS_URL: getEnvVar("REDIS_URL"),
     OTP_ATTEMPT_LIMIT: parseInt(getEnvVar("OTP_ATTEMPT_LIMIT", "5"), 10),
     OTP_EXPIRY_SECONDS: parseInt(getEnvVar("OTP_EXPIRY_SECONDS", "600"), 10),
-    OTP_RATE_LIMIT_WINDOW_SECONDS: parseInt(getEnvVar("OTP_RATE_LIMIT_WINDOW_SECONDS", "60"), 10)
+    OTP_RATE_LIMIT_WINDOW_SECONDS: parseInt(getEnvVar("OTP_RATE_LIMIT_WINDOW_SECONDS", "60"), 10),
+    RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS: parseInt(getEnvVar("RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS", "600"), 10)
 };

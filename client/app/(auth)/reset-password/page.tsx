@@ -2,12 +2,24 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { FormHeader } from "../components/FormHeader";
 import { ResetPasswordForm } from "../components/ResetPasswordForm";
-import { resetPasswordSchema } from "../validators/reset-password.js";
+import { resetPasswordSchema } from "../validators/reset-password";
 import { z } from "zod";
+import { useSearchParams } from "next/navigation";
+import { useResetPasswordMutation } from "@/hooks/mutations/useResetPasswordMutation";
+import { toast } from "sonner";
 
 const ResetPasswordPage = () => {
+    const searchParams = useSearchParams()
+    const token = searchParams.get('token')
+
+    const resetPasswordMutation = useResetPasswordMutation();
     const onSubmit = (data: z.infer<typeof resetPasswordSchema>) => {
-        console.log(data)
+        resetPasswordMutation.mutate({ password: data.newPassword, token: token as string }, {
+            onSuccess: (data: any) => {
+                toast.success(data?.message || "Password reset successfully !!")
+            }
+        })
+
     }
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
@@ -16,7 +28,11 @@ const ResetPasswordPage = () => {
                 <CardContent>
                     <p className="text-center text-sm text-shadow-muted-foreground">Enter your new password and confirm it to reset your password.</p>
                 </CardContent>
-                <ResetPasswordForm onSubmit={onSubmit} />
+                {!token || token.trim() === "" ?
+                    <div className="flex items-center justify-center">
+                        <p className="text-red-500">Token is missing</p>
+                    </div> :
+                    <ResetPasswordForm onSubmit={onSubmit} />}
             </Card>
         </div>
     )

@@ -2,7 +2,6 @@ import { Router } from "express";
 import * as authControllers from "./auth.controller.js";
 import { validateRequest } from "../../middleware/validateRequest.js";
 import * as validators from "./auth.validation.js";
-import { authenticate } from "../../middleware/auth.middleware.js";
 
 const router = Router();
 
@@ -15,6 +14,5 @@ router.post("/google", validateRequest(validators.googleLoginSchema), authContro
 
 router.post("/forgot-password", validateRequest(validators.forgotPasswordSchema), authControllers.requestPasswordReset);
 router.post("/reset-password", validateRequest(validators.resetPasswordSchema), authControllers.resetPassword);
-router.post("/verify-otp", validateRequest(validators.verifyOtpSchema), authControllers.verifyOtp);
 
 export default router;

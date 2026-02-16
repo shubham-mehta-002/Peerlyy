@@ -4,7 +4,7 @@ import { prisma } from "../../config/prisma.js";
 import { AppError } from "../../utils/AppError.js";
 import { redis } from "../../config/redis.js";
 import { sendEmail } from "../../utils/email.js";
-import { hashPassword, comparePassword } from "../../utils/hash.js";
+import { comparePassword, hashPassword, hashToken } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/token.js";
 import { env } from "../../config/env.js";
 import { OAuth2Client } from "google-auth-library";
@@ -21,6 +21,12 @@ const generateOtp = () => {
     const otp = crypto.randomInt(100000, 999999).toString();
     console.log({ otp })
     return otp;
+};
+
+const generateResetPasswordToken = (): string => {
+    const token = crypto.randomBytes(32).toString("hex");
+    console.log({ token })
+    return token;
 };
 
 const getDomain = (email: string) => {
@@ -235,59 +241,45 @@ export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
-    const email = req.body.email.toLowerCase().trim();
+    const email = getNormalizedEmail(req.body.email);
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (user) {
-        const otp = generateOtp();
-        await redis.setEx(`peerlyy:otp:reset:${email}`, 600, otp);
-        await sendEmail(email, "Password Reset OTP", `Your OTP is ${otp}`);
+    if (!user) {
+        return res.json({
+            success: true,
+            message: "If the email exists, a reset token has been sent.",
+        });
     }
 
-    res.json({ success: true, message: "If email exists, OTP sent" });
+    const rawToken = generateResetPasswordToken();
+    const hashedToken = hashToken(rawToken);
+    await redis.setEx(`token:reset:${hashedToken}`, env.RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS, user.id.toString());
+    await sendEmail(email, "Password Reset Token sent to email", `Visit here to reset password  --> ${env.APP_URL}/reset-password?token=${rawToken}`);
+
+    res.json({ success: true, message: "token sent" });
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
-    const email = req.body.email.toLowerCase().trim();
-    const { otp, newPassword } = req.body;
+    const { token, newPassword } = req.body;
+    const hashedToken = hashToken(token);
+    const key = `token:reset:${hashedToken}`;
+    const userId = await redis.get(key);
+    if (!userId)
+        throw new AppError("Invalid or expired token", HTTP_STATUS.BAD_REQUEST);
 
-    await checkOtpAttempts(email);
-
-    const key = `peerlyy:otp:reset:${email}`;
-    const storedOtp = await redis.get(key);
-
-    if (!storedOtp || storedOtp !== otp)
-        throw new AppError("Invalid or expired OTP", 400);
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user)
+        throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
 
     const hashedPassword = await hashPassword(newPassword);
 
     await prisma.user.update({
-        where: { email },
+        where: { id: userId },
         data: { password: hashedPassword }
     });
 
     await redis.del(key);
 
-    res.json({ success: true, message: "Password reset successful" });
-});
-
-export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
-    const { email, otp, type } = req.body;
-
-    const normalizedEmail = email.toLowerCase().trim();
-
-    let key =
-        type === "REGISTER"
-            ? `peerlyy:otp:register:${normalizedEmail}`
-            : `peerlyy:otp:reset:${normalizedEmail}`;
-
-    const storedOtp = await redis.get(key);
-
-    if (!storedOtp || storedOtp !== otp)
-        throw new AppError("Invalid or expired OTP", 400);
-
-    await redis.del(key);
-
-    res.json({ success: true, message: "OTP verified" });
+    return ApiResponse.success(res, null, "Password reset successful", HTTP_STATUS.OK);
 });

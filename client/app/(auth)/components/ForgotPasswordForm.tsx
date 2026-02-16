@@ -1,7 +1,7 @@
 'use client'
 
 import { CardContent } from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,14 +10,27 @@ import { z } from "zod";
 import { forgotPasswordSchema } from "../validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCwIcon } from "lucide-react";
+import { useForgotPasswordMutation } from "@/hooks/mutations/useForgotPasswordMutation";
+import { toast } from "sonner";
 
-export const ForgorPasswordForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof forgotPasswordSchema>) => void }) => {
+
+export const ForgorPasswordForm = () => {
     const form = useForm<z.infer<typeof forgotPasswordSchema>>({
         resolver: zodResolver(forgotPasswordSchema),
         defaultValues: {
             email: ""
         },
     })
+
+    const forgotPasswordMutation = useForgotPasswordMutation();
+
+    const onSubmit = (data: z.infer<typeof forgotPasswordSchema>) => {
+        forgotPasswordMutation.mutate({ email: data.email }, {
+            onSuccess: (data: any) => {
+                toast.success(data?.message || "Check your email for further instructions")
+            }
+        })
+    }
 
 
     return (
@@ -28,7 +41,7 @@ export const ForgorPasswordForm = ({ onSubmit }: { onSubmit: (data: z.infer<type
                         <Controller
                             name="email"
                             control={form.control}
-                            render={({ field }) => (
+                            render={({ field, fieldState }) => (
                                 <Field>
                                     <FieldLabel htmlFor="form-rhf-demo-email">
                                         Email
@@ -38,16 +51,20 @@ export const ForgorPasswordForm = ({ onSubmit }: { onSubmit: (data: z.infer<type
                                         id="form-rhf-demo-email"
                                         placeholder="Your college email ID"
                                     />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
                                 </Field>
                             )}
                         />
-                        <Button type="submit" className="w-full">
-                            Submit
+                        <Button type="submit" disabled={forgotPasswordMutation.isPending} className="w-full cursor-pointer">
+                            {forgotPasswordMutation.isPending ? "Sending..." : "Submit"}
                         </Button>
 
                         <Button
-                            type="button"
-                            className="w-full bg-muted text-primary"
+                            type="submit"
+                            disabled={forgotPasswordMutation.isPending}
+                            className="w-full bg-muted text-primary cursor-pointer"
                         >
                             <RefreshCwIcon />
                             Resend Code
