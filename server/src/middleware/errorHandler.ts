@@ -1,73 +1,74 @@
-// import { Request, Response, NextFunction } from 'express';
-// import { AppError } from '../utils/AppError.js';
-// import { ZodError } from 'zod';
-// import { Prisma } from '../generated/prisma/client.js';
+import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/AppError.js';
+import { ZodError } from 'zod';
+import { Prisma } from '../generated/prisma/client.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { HTTP_STATUS } from '../constants/index.js';
 
-// export const errorHandler = (
-//   err: Error | AppError,
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): void => {
-//   let statusCode = 500;
-//   let message = 'Internal Server Error';
-//   let errors: any[] = [];
+export const errorHandler = (
+    err: Error | AppError,
+    req: Request,
+    res: Response,
+    next: NextFunction
+): void => {
+    let statusCode = 500;
+    let message = 'Internal Server Error';
+    let errors: any[] = [];
 
-//   // Handle AppError
-//   if (err instanceof AppError) {
-//     statusCode = err.statusCode;
-//     message = err.message;
-//     errors = err.errors || [];
-//   }
+    // 1. Handle Trusted AppError
+    if (err instanceof AppError) {
+        statusCode = err.statusCode;
+        message = err.message;
+        errors = err.errors || [];
+    }
 
-//   // Handle Zod Error
-//   else if (err instanceof ZodError) {
-//     statusCode = 400;
-//     message = "Validation Error";
-//     errors = err.issues.map(e => ({
-//       field: e.path.join('.'),
-//       message: e.message
-//     }));
-//   }
+    // 2. Handle Zod Validation Errors
+    else if (err instanceof ZodError) {
+        statusCode = HTTP_STATUS.BAD_REQUEST;
+        message = "Validation Error";
+        errors = err.issues.map(issue => ({
+            field: issue.path.join('.'),
+            message: issue.message
+        }));
+    }
 
-//   // Handle Prisma Known Request Error
-//   else if (err instanceof Prisma.PrismaClientKnownRequestError) {
-//     if (err.code === 'P2002') {
-//       statusCode = 409;
-//       message = 'Duplicate field value entered';
+    // 3. Handle Prisma Database Errors
+    else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique constraint violation
+        if (err.code === 'P2002') {
+            statusCode = HTTP_STATUS.CONFLICT;
+            message = 'Duplicate field value entered';
+            const target = (err.meta?.target as string[]) || [];
+            if (target.length > 0) {
+                errors = [{ field: target.join(', '), message: `Duplicate value for ${target.join(', ')}` }];
+            }
+        }
+        // Record not found
+        else if (err.code === 'P2025') {
+            statusCode = HTTP_STATUS.NOT_FOUND;
+            message = 'Record not found';
+        }
+        // Foreign key constraint failure
+        else if (err.code === 'P2003') {
+            statusCode = HTTP_STATUS.BAD_REQUEST;
+            message = 'Foreign key constraint failed';
+        }
+    }
 
-//       // Try to extract the field that caused the unique constraint violation
-//       const target = (err.meta?.target as string[]) || [];
-//       if (target.length > 0) {
-//         message = `Duplicate value for field: ${target.join(', ')}`;
-//       }
-//     } else if (err.code === 'P2025') {
-//       statusCode = 404;
-//       message = 'Record not found';
-//     } else {
-//       message = `Database Error: ${err.message}`;
-//     }
-//   }
+    // 4. Handle JSON Syntax Errors
+    else if (err instanceof SyntaxError && 'body' in err) {
+        statusCode = HTTP_STATUS.BAD_REQUEST;
+        message = 'Invalid JSON payload';
+    }
 
-//   // Handle JSON Parse Error (SyntaxError)
-//   else if (err instanceof SyntaxError && 'body' in err) {
-//     statusCode = 400;
-//     message = 'Invalid JSON payload';
-//   }
+    // 5. Handle Generic Errors (Hide details in Production)
+    else {
+        message = err.message || 'Something went wrong';
+        if (process.env.NODE_ENV === 'production') {
+            message = 'Internal Server Error';
+        }
+    }
 
-//   // Handle Generic Error
-//   else if (err instanceof Error) {
-//     message = err.message;
-//     // In production, you might want to hide the stack trace or generic error messages
-//     if (process.env.NODE_ENV === 'production') {
-//       message = 'Something went wrong';
-//     }
-//   }
-
-//   res.status(statusCode).json({
-//     success: false,
-//     message,
-//     errors: errors.length > 0 ? errors : undefined,
-//     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-//   });
-// };
+    // Send Response using formatted ApiResponse
+    ApiResponse.error(res, message, statusCode, errors);
+};

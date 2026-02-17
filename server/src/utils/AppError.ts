@@ -1,17 +1,16 @@
-import { ApiError } from "../types/index.js";
+export class AppError extends Error {
+    public readonly statusCode: number;
+    public readonly isOperational: boolean;
+    public readonly errors?: any[];
 
-export class AppError extends Error implements ApiError {
-    statusCode: number;
-    isOperational: boolean;
-    errors?: any[];
-
-    constructor(message: string, statusCode: number = 500, errors: any[] = []) {
+    constructor(message: string, statusCode: number, errors: any[] = [], isOperational = true) {
         super(message);
         this.statusCode = statusCode;
-        this.isOperational = true;
+        this.isOperational = isOperational;
         this.errors = errors;
 
-        Error.captureStackTrace(this, this.constructor);
+        Object.setPrototypeOf(this, new.target.prototype);
+        Error.captureStackTrace(this);
     }
 }
 

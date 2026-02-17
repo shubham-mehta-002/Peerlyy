@@ -2,7 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
-import { notFoundHandler } from './middleware/index.js';
+import { notFoundHandler, errorHandler } from './middleware/index.js';
 import authRoutes from "./modules/auth/auth.route.js";
 import collegeRoutes from "./modules/admin/college/admin.college.route.js";
 import collegeDomainRoutes from "./modules/admin/collegeDomain/admin.collegeDomain.route.js";
@@ -33,7 +33,7 @@ app.use("/api/admin/college-domain", collegeDomainRoutes)
 app.use(notFoundHandler);
 
 // Global error handler (must be last)
-// app.use(errorHandler);
+app.use(errorHandler);
 
 export default app;
 
