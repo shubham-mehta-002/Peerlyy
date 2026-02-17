@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as authControllers from "./auth.controller.js";
 import { validateRequest } from "../../middleware/validateRequest.js";
+import { authenticate } from "../../middleware/auth.middleware.js";
 import * as validators from "./auth.validation.js";
 
 const router = Router();
@@ -11,6 +12,7 @@ router.post("/login", validateRequest(validators.loginSchema), authControllers.l
 router.post("/forgot-password", validateRequest(validators.forgotPasswordSchema), authControllers.requestPasswordReset);
 router.post("/reset-password", validateRequest(validators.resetPasswordSchema), authControllers.resetPassword);
 router.post("/refresh-token", validateRequest(validators.refreshAccessTokenSchema), authControllers.refreshAccessToken)
+router.post("/logout", authenticate, authControllers.logout);
 
 // router.post("/google", validateRequest(validators.googleLoginSchema), authControllers.googleLogin);
 // router.post("/logout", authenticate, authControllers.logout);

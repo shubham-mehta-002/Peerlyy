@@ -324,4 +324,28 @@ export const refreshAccessToken = asyncHandler(async (req: Request, res: Respons
     });
 
     return ApiResponse.success(res, null, "Access token refreshed successfully", HTTP_STATUS.OK);
-})
+});
+
+export const logout = asyncHandler(async (req: Request, res: Response) => {
+    // If we have the user ID from the middleware, we can clear the refresh token in the DB
+    if (req.user?.userId) {
+        await prisma.user.update({
+            where: { id: req.user.userId },
+            data: { refreshToken: null }
+        });
+    }
+
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict"
+    });
+
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict"
+    });
+
+    return ApiResponse.success(res, null, "Logged out successfully", HTTP_STATUS.OK);
+});
