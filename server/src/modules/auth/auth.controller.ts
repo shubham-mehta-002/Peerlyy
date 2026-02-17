@@ -83,6 +83,16 @@ export const registerInit = asyncHandler(async (req: Request, res: Response) => 
 
     await checkOtpAttempts(email);
 
+    // Domain Allowlist Check
+    const domain = getDomain(email);
+    const isWhitelisted = await prisma.collegeDomain.findUnique({
+        where: { domain },
+    });
+
+    if (!isWhitelisted || !isWhitelisted.isActive) {
+        throw new AppError("Email domain is not whitelisted or strictly inactive.", HTTP_STATUS.FORBIDDEN);
+    }
+
     const otp = generateOtp();
 
     await redis.setEx(
@@ -164,7 +174,16 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
         maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS,
     });
 
-    return ApiResponse.success(res, {}, "Logged in successfully", HTTP_STATUS.OK)
+    return ApiResponse.success(res, {
+        user: {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            isVerified: user.isVerified,
+            createdAt: user.createdAt
+        },
+        accessToken
+    }, "Logged in successfully", HTTP_STATUS.OK)
 });
 
 // export const googleLogin = asyncHandler(async (req: Request, res: Response) => {

@@ -20,11 +20,17 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     try {
         const authHeader = req.headers.authorization;
 
-        if (!authHeader?.startsWith("Bearer ")) {
-            throw new AppError("Unauthorized: No token provided", 401);
+        let token;
+
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.split(" ")[1];
+        } else if (req.cookies.accessToken) {
+            token = req.cookies.accessToken;
         }
 
-        const token = authHeader.split(" ")[1];
+        if (!token) {
+            throw new AppError("Unauthorized: No token provided", 401);
+        }
         const decoded = verifyAccessToken(token) as JwtPayload;
 
         if (!decoded || !decoded.userId) {
