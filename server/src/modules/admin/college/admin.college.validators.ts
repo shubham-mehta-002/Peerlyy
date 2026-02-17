@@ -12,9 +12,14 @@ export const createCollegeSchema = z.object({
             .min(2, "Campus name required")
             .max(150),
 
-        domainId: z
+        domain: z
             .string()
-            .uuid("Invalid domainId"),
+            .min(3, "Domain is required")
+            .toLowerCase()
+            .regex(
+                /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                "Invalid domain format"
+            ),
     }),
 });
 

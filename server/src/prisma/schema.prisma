@@ -71,6 +71,7 @@ model College {
 model CollegeDomain {
   id        String    @id @default(uuid())
   domain    String    @unique
+  isActive  Boolean   @default(true)
   colleges  College[]
   createdAt DateTime  @default(now())
 }

@@ -27,18 +27,21 @@ export type AggregateCollegeDomain = {
 export type CollegeDomainMinAggregateOutputType = {
   id: string | null
   domain: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
 export type CollegeDomainMaxAggregateOutputType = {
   id: string | null
   domain: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
 export type CollegeDomainCountAggregateOutputType = {
   id: number
   domain: number
+  isActive: number
   createdAt: number
   _all: number
 }
@@ -47,18 +50,21 @@ export type CollegeDomainCountAggregateOutputType = {
 export type CollegeDomainMinAggregateInputType = {
   id?: true
   domain?: true
+  isActive?: true
   createdAt?: true
 }
 
 export type CollegeDomainMaxAggregateInputType = {
   id?: true
   domain?: true
+  isActive?: true
   createdAt?: true
 }
 
 export type CollegeDomainCountAggregateInputType = {
   id?: true
   domain?: true
+  isActive?: true
   createdAt?: true
   _all?: true
 }
@@ -138,6 +144,7 @@ export type CollegeDomainGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 export type CollegeDomainGroupByOutputType = {
   id: string
   domain: string
+  isActive: boolean
   createdAt: Date
   _count: CollegeDomainCountAggregateOutputType | null
   _min: CollegeDomainMinAggregateOutputType | null
@@ -165,6 +172,7 @@ export type CollegeDomainWhereInput = {
   NOT?: Prisma.CollegeDomainWhereInput | Prisma.CollegeDomainWhereInput[]
   id?: Prisma.StringFilter<"CollegeDomain"> | string
   domain?: Prisma.StringFilter<"CollegeDomain"> | string
+  isActive?: Prisma.BoolFilter<"CollegeDomain"> | boolean
   createdAt?: Prisma.DateTimeFilter<"CollegeDomain"> | Date | string
   colleges?: Prisma.CollegeListRelationFilter
 }
@@ -172,6 +180,7 @@ export type CollegeDomainWhereInput = {
 export type CollegeDomainOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   domain?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   colleges?: Prisma.CollegeOrderByRelationAggregateInput
 }
@@ -182,6 +191,7 @@ export type CollegeDomainWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CollegeDomainWhereInput | Prisma.CollegeDomainWhereInput[]
   OR?: Prisma.CollegeDomainWhereInput[]
   NOT?: Prisma.CollegeDomainWhereInput | Prisma.CollegeDomainWhereInput[]
+  isActive?: Prisma.BoolFilter<"CollegeDomain"> | boolean
   createdAt?: Prisma.DateTimeFilter<"CollegeDomain"> | Date | string
   colleges?: Prisma.CollegeListRelationFilter
 }, "id" | "domain">
@@ -189,6 +199,7 @@ export type CollegeDomainWhereUniqueInput = Prisma.AtLeast<{
 export type CollegeDomainOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   domain?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CollegeDomainCountOrderByAggregateInput
   _max?: Prisma.CollegeDomainMaxOrderByAggregateInput
@@ -201,12 +212,14 @@ export type CollegeDomainScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CollegeDomainScalarWhereWithAggregatesInput | Prisma.CollegeDomainScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CollegeDomain"> | string
   domain?: Prisma.StringWithAggregatesFilter<"CollegeDomain"> | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"CollegeDomain"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CollegeDomain"> | Date | string
 }
 
 export type CollegeDomainCreateInput = {
   id?: string
   domain: string
+  isActive?: boolean
   createdAt?: Date | string
   colleges?: Prisma.CollegeCreateNestedManyWithoutDomainInput
 }
@@ -214,6 +227,7 @@ export type CollegeDomainCreateInput = {
 export type CollegeDomainUncheckedCreateInput = {
   id?: string
   domain: string
+  isActive?: boolean
   createdAt?: Date | string
   colleges?: Prisma.CollegeUncheckedCreateNestedManyWithoutDomainInput
 }
@@ -221,6 +235,7 @@ export type CollegeDomainUncheckedCreateInput = {
 export type CollegeDomainUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colleges?: Prisma.CollegeUpdateManyWithoutDomainNestedInput
 }
@@ -228,6 +243,7 @@ export type CollegeDomainUpdateInput = {
 export type CollegeDomainUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colleges?: Prisma.CollegeUncheckedUpdateManyWithoutDomainNestedInput
 }
@@ -235,18 +251,21 @@ export type CollegeDomainUncheckedUpdateInput = {
 export type CollegeDomainCreateManyInput = {
   id?: string
   domain: string
+  isActive?: boolean
   createdAt?: Date | string
 }
 
 export type CollegeDomainUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CollegeDomainUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -258,18 +277,21 @@ export type CollegeDomainScalarRelationFilter = {
 export type CollegeDomainCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   domain?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type CollegeDomainMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   domain?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type CollegeDomainMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   domain?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -287,15 +309,21 @@ export type CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CollegeDomainUpdateToOneWithWhereWithoutCollegesInput, Prisma.CollegeDomainUpdateWithoutCollegesInput>, Prisma.CollegeDomainUncheckedUpdateWithoutCollegesInput>
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type CollegeDomainCreateWithoutCollegesInput = {
   id?: string
   domain: string
+  isActive?: boolean
   createdAt?: Date | string
 }
 
 export type CollegeDomainUncheckedCreateWithoutCollegesInput = {
   id?: string
   domain: string
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -318,12 +346,14 @@ export type CollegeDomainUpdateToOneWithWhereWithoutCollegesInput = {
 export type CollegeDomainUpdateWithoutCollegesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CollegeDomainUncheckedUpdateWithoutCollegesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -361,6 +391,7 @@ export type CollegeDomainCountOutputTypeCountCollegesArgs<ExtArgs extends runtim
 export type CollegeDomainSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   domain?: boolean
+  isActive?: boolean
   createdAt?: boolean
   colleges?: boolean | Prisma.CollegeDomain$collegesArgs<ExtArgs>
   _count?: boolean | Prisma.CollegeDomainCountOutputTypeDefaultArgs<ExtArgs>
@@ -369,22 +400,25 @@ export type CollegeDomainSelect<ExtArgs extends runtime.Types.Extensions.Interna
 export type CollegeDomainSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   domain?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["collegeDomain"]>
 
 export type CollegeDomainSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   domain?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["collegeDomain"]>
 
 export type CollegeDomainSelectScalar = {
   id?: boolean
   domain?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }
 
-export type CollegeDomainOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "domain" | "createdAt", ExtArgs["result"]["collegeDomain"]>
+export type CollegeDomainOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "domain" | "isActive" | "createdAt", ExtArgs["result"]["collegeDomain"]>
 export type CollegeDomainInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   colleges?: boolean | Prisma.CollegeDomain$collegesArgs<ExtArgs>
   _count?: boolean | Prisma.CollegeDomainCountOutputTypeDefaultArgs<ExtArgs>
@@ -400,6 +434,7 @@ export type $CollegeDomainPayload<ExtArgs extends runtime.Types.Extensions.Inter
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     domain: string
+    isActive: boolean
     createdAt: Date
   }, ExtArgs["result"]["collegeDomain"]>
   composites: {}
@@ -827,6 +862,7 @@ export interface Prisma__CollegeDomainClient<T, Null = never, ExtArgs extends ru
 export interface CollegeDomainFieldRefs {
   readonly id: Prisma.FieldRef<"CollegeDomain", 'String'>
   readonly domain: Prisma.FieldRef<"CollegeDomain", 'String'>
+  readonly isActive: Prisma.FieldRef<"CollegeDomain", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"CollegeDomain", 'DateTime'>
 }
     

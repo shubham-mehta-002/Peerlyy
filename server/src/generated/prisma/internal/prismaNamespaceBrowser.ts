@@ -86,6 +86,7 @@ export type CollegeScalarFieldEnum = (typeof CollegeScalarFieldEnum)[keyof typeo
 export const CollegeDomainScalarFieldEnum = {
   id: 'id',
   domain: 'domain',
+  isActive: 'isActive',
   createdAt: 'createdAt'
 } as const
 

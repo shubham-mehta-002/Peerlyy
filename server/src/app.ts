@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
 import { notFoundHandler } from './middleware/index.js';
 import authRoutes from "./modules/auth/auth.route.js";
+import collegeRoutes from "./modules/admin/college/admin.college.route.js";
+import collegeDomainRoutes from "./modules/admin/collegeDomain/admin.collegeDomain.route.js";
 
 const app: Application = express();
 
@@ -23,6 +25,9 @@ app.use(cookieParser());
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin/college", collegeRoutes)
+app.use("/api/admin/college-domain", collegeDomainRoutes)
+
 
 // 404 handler
 app.use(notFoundHandler);

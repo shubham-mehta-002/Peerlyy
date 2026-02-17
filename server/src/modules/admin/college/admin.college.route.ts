@@ -11,6 +11,7 @@ const router = Router();
 // router.use(requireAuth(), verifyAdmin);
 
 router.post("/", validateRequest(validatiors.createCollegeSchema), adminCollegeController.createCollege);
+router.get("/", adminCollegeController.getAllColleges);
 router.patch("/:id", validateRequest(validatiors.updateCollegeSchema), adminCollegeController.updateCollege);
 router.delete("/:id", validateRequest(validatiors.deleteCollegeSchema), adminCollegeController.deleteCollege);
 

@@ -6,21 +6,27 @@ import { ApiResponse } from "../../../utils/apiResponse.js";
 import { HTTP_STATUS } from '../../../constants/index.js';
 
 export const createCollege = asyncHandler(async (req: Request, res: Response) => {
-    const { name, campus, domainId } = req.body;
+    const { name, campus, domain } = req.body;
 
-    const domainExists = await prisma.collegeDomain.findUnique({
-        where: { id: domainId }
+    // Find or create the domain
+    let collegeDomain = await prisma.collegeDomain.findUnique({
+        where: { domain }
     });
 
-    if (!domainExists) {
-        throw new AppError("Invalid domain", HTTP_STATUS.BAD_REQUEST);
+    if (!collegeDomain) {
+        collegeDomain = await prisma.collegeDomain.create({
+            data: { domain, isActive: true }
+        });
     }
 
     const college = await prisma.college.create({
         data: {
             name,
             campus,
-            domainId
+            domainId: collegeDomain.id
+        },
+        include: {
+            domain: true
         }
     });
 
@@ -43,6 +49,48 @@ export const getCollegesByDomain = asyncHandler(async (req: Request, res: Respon
     }
 
     return ApiResponse.success(res, record.colleges, "Colleges fetched successfully", HTTP_STATUS.OK);
+});
+
+export const getAllColleges = asyncHandler(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string;
+
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    if (search) {
+        where.OR = [
+            { name: { contains: search, mode: 'insensitive' } },
+            { campus: { contains: search, mode: 'insensitive' } },
+            { domain: { domain: { contains: search, mode: 'insensitive' } } }
+        ];
+    }
+
+    const [colleges, total] = await Promise.all([
+        prisma.college.findMany({
+            where,
+            skip,
+            take: limit,
+            include: {
+                domain: true
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        }),
+        prisma.college.count({ where })
+    ]);
+
+    return ApiResponse.success(res, {
+        items: colleges,
+        pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit)
+        }
+    }, "Colleges fetched successfully", HTTP_STATUS.OK);
 });
 
 export const updateCollege = asyncHandler(async (req: Request, res: Response) => {
