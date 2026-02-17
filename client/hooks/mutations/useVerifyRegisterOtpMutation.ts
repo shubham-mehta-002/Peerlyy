@@ -1,22 +1,14 @@
 import { authServices } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-
-type VerifyRegisterOtpPayload = {
-    email: string;
-    otp: string;
-    password: string;
-};
+import { RegisterCompleteRequest } from "@/types/auth.types";
+import { AxiosError } from "axios";
+import { ApiResponse } from "@/types/admin.types";
 
 export const useVerifyRegisterOtpMutation = () => {
     return useMutation({
-        mutationFn: (data: VerifyRegisterOtpPayload) =>
-            authServices.verifyRegisterOtp(
-                data.email,
-                data.otp,
-                data.password
-            ),
-        onError: (error: any) => {
+        mutationFn: (data: RegisterCompleteRequest) => authServices.verifyRegisterOtp(data),
+        onError: (error: AxiosError<ApiResponse<null>>) => {
             toast.error(
                 error.response?.data?.message || "Something went wrong"
             );

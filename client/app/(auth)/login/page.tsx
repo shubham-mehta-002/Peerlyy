@@ -6,15 +6,18 @@ import { Card } from "@/components/ui/card"
 import { FormHeader, LoginForm } from "../components"
 import { useLoginMutation } from "@/hooks"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 
 export function LoginPage() {
     const loginMutation = useLoginMutation();
+    const router = useRouter();
 
     const onSubmit = (data: z.infer<typeof loginFormSchema>) => {
         loginMutation.mutate({ email: data.email, password: data.password }, {
             onSuccess: (data: any) => {
                 toast.success(data?.message || "Login successful")
+                router.push("/")
             }
         })
     }

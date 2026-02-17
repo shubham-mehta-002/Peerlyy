@@ -1,17 +1,14 @@
 import { authServices } from "@/services/auth.service"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
-
-type ResetPasswordPayload = {
-    token: string;
-    password: string;
-}
-
+import { ResetPasswordRequest } from "@/types/auth.types"
+import { AxiosError } from "axios"
+import { ApiResponse } from "@/types/admin.types"
 
 export const useResetPasswordMutation = () => {
     return useMutation({
-        mutationFn: (payload: ResetPasswordPayload) => authServices.resetPassword(payload.token, payload.password),
-        onError: (error: any) => {
+        mutationFn: (payload: ResetPasswordRequest) => authServices.resetPassword(payload),
+        onError: (error: AxiosError<ApiResponse<null>>) => {
             toast.error(error.response?.data?.message || "Something went wrong");
         }
     })
