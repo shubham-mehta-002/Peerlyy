@@ -17,7 +17,7 @@ export const registerInitSchema = z.object({
 
 export const registerCompleteSchema = z.object({
     body: z.object({
-        email: z.string().email(),
+        email: z.email(),
         otp: z.string().length(6),
         password: passwordSchema,
     }),
@@ -25,16 +25,16 @@ export const registerCompleteSchema = z.object({
 
 export const loginSchema = z.object({
     body: z.object({
-        email: z.string().email(),
+        email: z.email(),
         password: passwordSchema,
     }),
 });
 
-export const googleLoginSchema = z.object({
-    body: z.object({
-        idToken: z.string(),
-    }),
-});
+// export const googleLoginSchema = z.object({
+//     body: z.object({
+//         idToken: z.string(),
+//     }),
+// });
 
 export const forgotPasswordSchema = z.object({
     body: z.object({
@@ -46,14 +46,6 @@ export const resetPasswordSchema = z.object({
     body: z.object({
         token: z.string().trim(),
         newPassword: passwordSchema,
-    }),
-});
-
-export const verifyOtpSchema = z.object({
-    body: z.object({
-        email: z.string().email(),
-        otp: z.string().length(6),
-        type: z.enum(["REGISTER"]),
     }),
 });
 

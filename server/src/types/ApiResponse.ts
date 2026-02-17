@@ -1,6 +1,6 @@
-export interface ApiResponse<T = any> {
+export interface IApiResponse<T> {
     success: boolean;
     message: string;
-    data?: T;
-    error?: string;
+    data: T | null;
+    errors?: any[];
 }

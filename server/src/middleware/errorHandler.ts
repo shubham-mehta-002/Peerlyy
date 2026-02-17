@@ -2,14 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/AppError.js';
 import { ZodError } from 'zod';
 import { Prisma } from '../generated/prisma/client.js';
-import { ApiResponse } from '../utils/apiResponse.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
 import { HTTP_STATUS } from '../constants/index.js';
 
 export const errorHandler = (
     err: Error | AppError,
-    req: Request,
+    _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
 ): void => {
     let statusCode = 500;
     let message = 'Internal Server Error';
@@ -61,12 +61,9 @@ export const errorHandler = (
         message = 'Invalid JSON payload';
     }
 
-    // 5. Handle Generic Errors (Hide details in Production)
+    // 5. Handle Generic Errors
     else {
         message = err.message || 'Something went wrong';
-        if (process.env.NODE_ENV === 'production') {
-            message = 'Internal Server Error';
-        }
     }
 
     // Send Response using formatted ApiResponse

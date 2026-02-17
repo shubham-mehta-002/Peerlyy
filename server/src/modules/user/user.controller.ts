@@ -1,76 +1,13 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../../utils/asyncHandler.js";
 import { prisma } from "../../config/prisma.js";
-import { AppError } from "../../utils/AppError.js";
-import { redis } from "../../config/redis.js";
-import { sendEmail } from "../../utils/email.js";
-import { comparePassword, hashPassword, hashToken } from "../../utils/hash.js";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/token.js";
 import { env } from "../../config/env.js";
-import { OAuth2Client } from "google-auth-library";
-import crypto from "crypto";
 import { AuthProvider } from "../../constants/authProvider.enum.js";
 import { HTTP_STATUS } from "../../constants/index.js";
-import { ApiResponse } from "../../utils/apiResponse.js";
+import { generateAccessAndRefreshTokens, generateOtp, asyncHandler, getDomain, getNormalizedEmail, checkOtpAttempts, generateResetPasswordToken, ApiResponse, AppError, sendEmail, comparePassword, hashPassword, hashToken, generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/index.js";
+import { redis } from "../../config/redis.js";
+import { toUserResponse } from "./user.mapper.js";
 
-const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
-
-const generateAccessAndRefreshTokens = async (userId: string, role: string) => {
-    // const user = await prisma.user.findUnique({ where: { id: userId } });
-    // if (!user) throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
-
-    const accessToken = generateAccessToken(userId, role);
-    const refreshToken = generateRefreshToken(userId, role);
-
-    await prisma.user.update({
-        where: { id: userId },
-        data: { refreshToken }
-    })
-
-    return { accessToken, refreshToken };
-}
-// Some helper functions ...
-const generateOtp = () => {
-    const otp = crypto.randomInt(100000, 999999).toString();
-    console.log({ otp })
-    return otp;
-};
-
-const generateResetPasswordToken = (): string => {
-    const token = crypto.randomBytes(32).toString("hex");
-    console.log({ token })
-    return token;
-};
-
-const getDomain = (email: string) => {
-    const [, domain] = email.toLowerCase().trim().split("@");
-    if (!domain) throw new AppError("Invalid email", 400);
-    return domain;
-}
-
-const getNormalizedEmail = (email: string) => {
-    return email.toLowerCase().trim();
-}
-
-
-export const checkOtpAttempts = async (email: string) => {
-    const normalizedEmail = getNormalizedEmail(email);
-    const key = `otp:attempts:${normalizedEmail}`;
-
-    const attempts = await redis.incr(key);
-
-    // If first attempt, set expiry to 1 minute
-    if (attempts === 1) {
-        await redis.expire(key, env.OTP_RATE_LIMIT_WINDOW_SECONDS);
-    }
-
-    if (attempts > env.OTP_ATTEMPT_LIMIT) {
-        throw new AppError("Too many OTP attempts. Try again in 1 minute.", 429);
-    }
-
-    return attempts;
-};
-
+// const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 // Initiates the registration process by sending an OTP to the user's email.
 export const registerInit = asyncHandler(async (req: Request, res: Response) => {
@@ -90,7 +27,7 @@ export const registerInit = asyncHandler(async (req: Request, res: Response) => 
     });
 
     if (!isWhitelisted || !isWhitelisted.isActive) {
-        throw new AppError("Email domain is not whitelisted or strictly inactive.", HTTP_STATUS.FORBIDDEN);
+        throw new AppError("Email domain not supported", HTTP_STATUS.FORBIDDEN);
     }
 
     const otp = generateOtp();
@@ -118,9 +55,9 @@ export const registerComplete = asyncHandler(async (req: Request, res: Response)
 
     const key = `otp:register:${email}`;
     const storedOtp = await redis.get(key);
-    console.log({ storedOtp, otp });
+
     if (!storedOtp || storedOtp !== otp) {
-        throw new AppError("Invalid or expired OTP", 400);
+        throw new AppError("Invalid or expired OTP", HTTP_STATUS.BAD_REQUEST);
     }
 
     const hashedPassword = await hashPassword(password);
@@ -142,7 +79,7 @@ export const registerComplete = asyncHandler(async (req: Request, res: Response)
     await redis.del(key);
     await redis.del(`otp:attempts:${email}`);
 
-    return ApiResponse.success(res, null, "User registered successfully", HTTP_STATUS.OK);
+    return ApiResponse.success(res, { user }, "User registered successfully", HTTP_STATUS.CREATED);
 });
 
 
@@ -175,13 +112,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     });
 
     return ApiResponse.success(res, {
-        user: {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            isVerified: user.isVerified,
-            createdAt: user.createdAt
-        },
+        user: toUserResponse(user),
         accessToken
     }, "Logged in successfully", HTTP_STATUS.OK)
 });
@@ -270,7 +201,7 @@ export const requestPasswordReset = asyncHandler(async (req: Request, res: Respo
     await redis.setEx(`token:reset:${hashedToken}`, env.RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS, user.id.toString());
     await sendEmail(email, "Password Reset Token sent to email", `Visit here to reset password  --> ${env.APP_URL}/reset-password?token=${rawToken}`);
 
-    res.json({ success: true, message: "token sent" });
+    return ApiResponse.success(res, null, "Token sent successfully", HTTP_STATUS.OK);
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {

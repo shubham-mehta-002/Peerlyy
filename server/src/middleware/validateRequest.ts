@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodObject, ZodRawShape, ZodError } from "zod";
 import { AppError } from "../utils/AppError.js";
+import { HTTP_STATUS } from "../constants/httpStatusCodes.js";
 
 export const validateRequest = (schema: ZodObject<ZodRawShape>) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +18,7 @@ export const validateRequest = (schema: ZodObject<ZodRawShape>) => {
                     .map((e) => `${e.path.join(".")}: ${e.message}`)
                     .join(", ");
 
-                next(new AppError(errorMessage, 400));
+                next(new AppError(errorMessage, HTTP_STATUS.BAD_REQUEST));
             } else {
                 next(error);
             }

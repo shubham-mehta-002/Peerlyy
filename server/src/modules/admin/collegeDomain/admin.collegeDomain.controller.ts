@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../../config/prisma.js";
 import { asyncHandler } from "../../../utils/asyncHandler.js";
-import { ApiResponse } from "../../../utils/apiResponse.js";
+import { ApiResponse } from "../../../utils/ApiResponse.js";
 import { HTTP_STATUS } from "../../../constants/index.js";
 import { AppError } from "../../../utils/AppError.js";
 

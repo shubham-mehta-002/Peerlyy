@@ -19,10 +19,8 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
             subject,
             html,
         });
-        console.log(`Message sent: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error("Error sending email:", error);
         throw new Error("Failed to send email");
     }
 };

@@ -1,0 +1,60 @@
+import { generateAccessToken, generateRefreshToken } from "./token.js";
+import { prisma } from "../config/prisma.js";
+import { AppError } from "./AppError.js";
+import { HTTP_STATUS } from "../constants/index.js";
+import { redis } from "../config/redis.js";
+import { env } from "../config/env.js";
+import crypto from "crypto";
+
+export const generateAccessAndRefreshTokens = async (userId: string, role: string) => {
+    const accessToken = generateAccessToken(userId, role);
+    const refreshToken = generateRefreshToken(userId, role);
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken }
+    })
+
+    return { accessToken, refreshToken };
+}
+
+export const generateOtp = () => {
+    const otp = crypto.randomInt(100000, 999999).toString();
+    console.log({ otp })
+    return otp;
+};
+
+export const generateResetPasswordToken = (): string => {
+    const token = crypto.randomBytes(32).toString("hex");
+    console.log({ token })
+    return token;
+};
+
+export const getDomain = (email: string) => {
+    const [, domain] = email.toLowerCase().trim().split("@");
+    if (!domain) throw new AppError("Invalid email", 400);
+    return domain;
+}
+
+export const getNormalizedEmail = (email: string) => {
+    return email.toLowerCase().trim();
+}
+
+
+export const checkOtpAttempts = async (email: string) => {
+    const normalizedEmail = getNormalizedEmail(email);
+    const key = `otp:attempts:${normalizedEmail}`;
+
+    const attempts = await redis.incr(key);
+
+    // If first attempt, set expiry to 1 minute
+    if (attempts === 1) {
+        await redis.expire(key, env.OTP_RATE_LIMIT_WINDOW_SECONDS);
+    }
+
+    if (attempts > env.OTP_ATTEMPT_LIMIT) {
+        throw new AppError("Too many OTP attempts. Try again in 1 minute.", 429);
+    }
+
+    return attempts;
+};

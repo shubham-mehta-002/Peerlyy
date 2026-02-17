@@ -1,11 +1,5 @@
 import type { Response } from "express";
-
-interface IApiResponse<T> {
-    success: boolean;
-    message: string;
-    data: T | null;
-    errors?: any[];
-}
+import { IApiResponse } from "../types/ApiResponse.js";
 
 export class ApiResponse {
     static success<T>(res: Response, data: T, message: string = 'Success', statusCode: number = 200) {

@@ -3,18 +3,7 @@ import { prisma } from "../config/prisma.js";
 import { AppError } from "../utils/AppError.js";
 import { verifyAccessToken } from "../utils/token.js";
 import { JwtPayload } from "jsonwebtoken";
-
-// Extend Express Request interface
-declare global {
-    namespace Express {
-        interface Request {
-            user?: {
-                userId: string;
-                role: string;
-            };
-        }
-    }
-}
+import { HTTP_STATUS } from "../constants/httpStatusCodes.js";
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -29,12 +18,12 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         }
 
         if (!token) {
-            throw new AppError("Unauthorized: No token provided", 401);
+            throw new AppError("Unauthorized: No token provided", HTTP_STATUS.UNAUTHORIZED);
         }
         const decoded = verifyAccessToken(token) as JwtPayload;
 
         if (!decoded || !decoded.userId) {
-            throw new AppError("Unauthorized: Invalid token", 401);
+            throw new AppError("Unauthorized: Invalid token", HTTP_STATUS.UNAUTHORIZED);
         }
 
         req.user = {
@@ -44,14 +33,14 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
         next();
     } catch (error) {
-        throw new AppError("Unauthorized", 401);
+        throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
 };
 
 export const authorize = (roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!req.user || !roles.includes(req.user.role)) {
-            throw new AppError("Forbidden: Insufficient permissions", 403);
+            throw new AppError("Forbidden: Insufficient permissions", HTTP_STATUS.FORBIDDEN);
         }
         next();
     };
@@ -60,9 +49,7 @@ export const authorize = (roles: string[]) => {
 export const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
     // Re-implement verifyAdmin using the new req.user
     if (!req.user || req.user.role !== "ADMIN") {
-        return next(new AppError("Forbidden: Admin access required", 403));
+        return next(new AppError("Forbidden: Admin access required", HTTP_STATUS.FORBIDDEN));
     }
     next();
 };
-
-export const protect = authenticate; // Alias for backward compatibility if needed, or just use authenticate
