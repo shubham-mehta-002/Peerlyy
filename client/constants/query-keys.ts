@@ -2,5 +2,8 @@ export const QUERY_KEYS = {
     ADMIN: {
         COLLEGE_DOMAINS: "admin-college-domains",
         COLLEGES: "admin-colleges"
+    },
+    USER: {
+        CURRENT_USER: "current-user"
     }
 } as const;

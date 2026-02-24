@@ -7,16 +7,20 @@ import { z } from "zod";
 import { useSearchParams } from "next/navigation";
 import { useResetPasswordMutation } from "@/hooks/mutations/useResetPasswordMutation";
 import { toast } from "sonner";
+import { useRouter } from "next/router";
 
 const ResetPasswordPage = () => {
     const searchParams = useSearchParams()
     const token = searchParams.get('token')
 
+    const router = useRouter()
+
     const resetPasswordMutation = useResetPasswordMutation();
     const onSubmit = (data: z.infer<typeof resetPasswordSchema>) => {
-        resetPasswordMutation.mutate({ password: data.newPassword, token: token as string }, {
+        resetPasswordMutation.mutate({ newPassword: data.newPassword, token: token as string }, {
             onSuccess: (data: any) => {
                 toast.success(data?.message || "Password reset successfully !!")
+                router.push("/login")
             }
         })
 

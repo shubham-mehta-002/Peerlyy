@@ -1,6 +1,3 @@
-import { ApiResponse } from "./admin.types";
-
-// Auth Response Data
 export interface User {
     id: string;
     email: string;

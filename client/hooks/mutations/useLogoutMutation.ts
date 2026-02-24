@@ -13,7 +13,7 @@ export const useLogoutMutation = () => {
         mutationFn: authServices.logout,
         onSuccess: (data) => {
             toast.success(data.message || "Logged out successfully");
-            queryClient.clear(); // Clear all query cache
+            queryClient.clear();
             router.push("/login");
         },
         onError: (error: AxiosError<ApiResponse<null>>) => {

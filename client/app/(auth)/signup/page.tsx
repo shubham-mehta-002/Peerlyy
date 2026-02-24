@@ -51,7 +51,7 @@ export default function SignUpPage() {
         verifyRegisterOtpMutation.mutate({ email: signupData.email, otp, password: signupData.password }, {
             onSuccess: (data: any) => {
                 toast.success(data?.message || "OTP Verified successfully!!")
-                router.push("/auth/login")
+                router.push("/login")
             }
         })
     }
