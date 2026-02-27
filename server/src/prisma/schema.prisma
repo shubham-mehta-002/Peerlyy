@@ -22,17 +22,17 @@ enum UserRole {
 enum PostVisibility {
   PUBLIC
   COLLEGE
-  COMMUNITY
 }
 
-// enum NotificationType {
-//   COMMENT
-//   LIKE
-//   MESSAGE
-//   MENTION
-//   REPORT
-//   SYSTEM
-// }
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
 
 enum ReportStatus {
   PENDING
@@ -62,6 +62,7 @@ model College {
   domainId String
 
   users User[]
+  posts Post[]
 
   createdAt DateTime @default(now())
 
@@ -95,8 +96,77 @@ model User {
   role   UserRole   @default(STUDENT)
   status UserStatus @default(ACTIVE)
 
+  posts    Post[]
+  votes    Vote[]
+  comments Comment[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([collegeId])
+}
+
+model Post {
+  id            String         @id @default(uuid())
+  caption       String
+  mediaUrl      String
+  mediaFileId   String?        // ImageKit file ID for deletion
+  mediaType     MediaType
+  visibility    PostVisibility @default(PUBLIC)
+  isCollegeOnly Boolean        @default(false)
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  college   College? @relation(fields: [collegeId], references: [id])
+  collegeId String?
+
+  votes    Vote[]
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+  @@index([collegeId])
+}
+
+model Vote {
+  id   String   @id @default(uuid())
+  type VoteType
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+}
+
+model Comment {
+  id          String  @id @default(uuid())
+  content     String
+  isAnonymous Boolean @default(false)
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([postId])
+  @@index([authorId])
+  @@index([parentId])
 }

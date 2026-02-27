@@ -30,10 +30,20 @@ export const adminService = {
 
     // Domain Operations
     getCollegeDomains: async (page = 1, limit = 10, search = "") => {
-        const response = await axiosInstance.get<ApiResponse<PaginatedResponse<CollegeDomain>>>(`/admin/college-domain`, {
+        const response = await axiosInstance.get<ApiResponse<{ domains: CollegeDomain[]; pagination: any }>>(`/admin/college-domain`, {
             params: { page, limit, search }
         });
-        return response.data;
+
+        // Normalize the response to match PaginatedResponse<CollegeDomain>
+        const data: ApiResponse<PaginatedResponse<CollegeDomain>> = {
+            ...response.data,
+            data: {
+                items: response.data.data.domains,
+                pagination: response.data.data.pagination
+            }
+        };
+
+        return data;
     },
 
     createCollegeDomain: async (domain: string, isActive: boolean) => {

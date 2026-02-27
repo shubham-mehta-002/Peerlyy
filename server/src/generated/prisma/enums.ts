@@ -20,11 +20,26 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 export const PostVisibility = {
   PUBLIC: 'PUBLIC',
-  COLLEGE: 'COLLEGE',
-  COMMUNITY: 'COMMUNITY'
+  COLLEGE: 'COLLEGE'
 } as const
 
 export type PostVisibility = (typeof PostVisibility)[keyof typeof PostVisibility]
+
+
+export const MediaType = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO'
+} as const
+
+export type MediaType = (typeof MediaType)[keyof typeof MediaType]
+
+
+export const VoteType = {
+  UPVOTE: 'UPVOTE',
+  DOWNVOTE: 'DOWNVOTE'
+} as const
+
+export type VoteType = (typeof VoteType)[keyof typeof VoteType]
 
 
 export const ReportStatus = {

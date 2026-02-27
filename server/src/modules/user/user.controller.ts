@@ -15,7 +15,7 @@ export const registerInit = asyncHandler(async (req: Request, res: Response) => 
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (user) {
-        return ApiResponse.error(res, "User already exists", HTTP_STATUS.CONFLICT);
+        throw new AppError("User already exists", HTTP_STATUS.CONFLICT);
     }
 
     await checkOtpAttempts(email);
@@ -101,14 +101,14 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS,
+        maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS,
+        maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS * 1000,
     });
 
     return ApiResponse.success(res, {
@@ -190,10 +190,8 @@ export const requestPasswordReset = asyncHandler(async (req: Request, res: Respo
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-        return res.json({
-            success: true,
-            message: "If the email exists, a reset token has been sent.",
-        });
+        // Return success to prevent email enumeration attacks
+        return ApiResponse.success(res, null, "If the email exists, a reset token has been sent.", HTTP_STATUS.OK);
     }
 
     const rawToken = generateResetPasswordToken();
@@ -244,17 +242,29 @@ export const refreshAccessToken = asyncHandler(async (req: Request, res: Respons
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS,
+        maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS,
+        maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS * 1000,
     });
 
     return ApiResponse.success(res, null, "Access token refreshed successfully", HTTP_STATUS.OK);
+});
+
+export const me = asyncHandler(async (req: Request, res: Response) => {
+    const user = await prisma.user.findUnique({
+        where: { id: req.user?.userId as string }
+    });
+
+    if (!user) {
+        throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return ApiResponse.success(res, toUserResponse(user), "User profile fetched successfully", HTTP_STATUS.OK);
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
@@ -268,15 +278,16 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
 
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict"
     });
 
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict"
     });
 
     return ApiResponse.success(res, null, "Logged out successfully", HTTP_STATUS.OK);
 });
+

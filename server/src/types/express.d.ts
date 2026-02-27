@@ -5,7 +5,10 @@ declare global {
                 userId?: string | null;
                 role: string;
             };
+            file?: Express.Multer.File;
+            files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
         }
+
     }
 }
 

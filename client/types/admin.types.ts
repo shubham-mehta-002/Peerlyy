@@ -1,8 +1,11 @@
+import { ApiResponse, PaginatedResponse } from "./common.types";
+
 export interface CollegeDomain {
     id: string;
     domain: string;
     isActive: boolean;
     createdAt: string;
+    updatedAt: string;
     colleges?: {
         name: string;
         campus: string;
@@ -19,20 +22,7 @@ export interface College {
     domainId: string;
     domain: CollegeDomain;
     createdAt: string;
+    updatedAt: string;
 }
 
-export interface ApiResponse<T> {
-    success: boolean;
-    message: string;
-    data: T;
-}
-
-export interface PaginatedResponse<T> {
-    items: T[];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-    };
-}
+export type { ApiResponse, PaginatedResponse };

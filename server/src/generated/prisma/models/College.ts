@@ -184,6 +184,7 @@ export type CollegeWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"College"> | Date | string
   domain?: Prisma.XOR<Prisma.CollegeDomainScalarRelationFilter, Prisma.CollegeDomainWhereInput>
   users?: Prisma.UserListRelationFilter
+  posts?: Prisma.PostListRelationFilter
 }
 
 export type CollegeOrderByWithRelationInput = {
@@ -194,6 +195,7 @@ export type CollegeOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   domain?: Prisma.CollegeDomainOrderByWithRelationInput
   users?: Prisma.UserOrderByRelationAggregateInput
+  posts?: Prisma.PostOrderByRelationAggregateInput
 }
 
 export type CollegeWhereUniqueInput = Prisma.AtLeast<{
@@ -207,6 +209,7 @@ export type CollegeWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"College"> | Date | string
   domain?: Prisma.XOR<Prisma.CollegeDomainScalarRelationFilter, Prisma.CollegeDomainWhereInput>
   users?: Prisma.UserListRelationFilter
+  posts?: Prisma.PostListRelationFilter
 }, "id">
 
 export type CollegeOrderByWithAggregationInput = {
@@ -238,6 +241,7 @@ export type CollegeCreateInput = {
   createdAt?: Date | string
   domain: Prisma.CollegeDomainCreateNestedOneWithoutCollegesInput
   users?: Prisma.UserCreateNestedManyWithoutCollegeInput
+  posts?: Prisma.PostCreateNestedManyWithoutCollegeInput
 }
 
 export type CollegeUncheckedCreateInput = {
@@ -247,6 +251,7 @@ export type CollegeUncheckedCreateInput = {
   domainId: string
   createdAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCollegeInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCollegeInput
 }
 
 export type CollegeUpdateInput = {
@@ -256,6 +261,7 @@ export type CollegeUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   domain?: Prisma.CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput
   users?: Prisma.UserUpdateManyWithoutCollegeNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCollegeNestedInput
 }
 
 export type CollegeUncheckedUpdateInput = {
@@ -265,6 +271,7 @@ export type CollegeUncheckedUpdateInput = {
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutCollegeNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCollegeNestedInput
 }
 
 export type CollegeCreateManyInput = {
@@ -395,12 +402,29 @@ export type CollegeUpdateOneWithoutUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CollegeUpdateToOneWithWhereWithoutUsersInput, Prisma.CollegeUpdateWithoutUsersInput>, Prisma.CollegeUncheckedUpdateWithoutUsersInput>
 }
 
+export type CollegeCreateNestedOneWithoutPostsInput = {
+  create?: Prisma.XOR<Prisma.CollegeCreateWithoutPostsInput, Prisma.CollegeUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.CollegeCreateOrConnectWithoutPostsInput
+  connect?: Prisma.CollegeWhereUniqueInput
+}
+
+export type CollegeUpdateOneWithoutPostsNestedInput = {
+  create?: Prisma.XOR<Prisma.CollegeCreateWithoutPostsInput, Prisma.CollegeUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.CollegeCreateOrConnectWithoutPostsInput
+  upsert?: Prisma.CollegeUpsertWithoutPostsInput
+  disconnect?: Prisma.CollegeWhereInput | boolean
+  delete?: Prisma.CollegeWhereInput | boolean
+  connect?: Prisma.CollegeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CollegeUpdateToOneWithWhereWithoutPostsInput, Prisma.CollegeUpdateWithoutPostsInput>, Prisma.CollegeUncheckedUpdateWithoutPostsInput>
+}
+
 export type CollegeCreateWithoutDomainInput = {
   id?: string
   name: string
   campus: string
   createdAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutCollegeInput
+  posts?: Prisma.PostCreateNestedManyWithoutCollegeInput
 }
 
 export type CollegeUncheckedCreateWithoutDomainInput = {
@@ -409,6 +433,7 @@ export type CollegeUncheckedCreateWithoutDomainInput = {
   campus: string
   createdAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCollegeInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCollegeInput
 }
 
 export type CollegeCreateOrConnectWithoutDomainInput = {
@@ -454,6 +479,7 @@ export type CollegeCreateWithoutUsersInput = {
   campus: string
   createdAt?: Date | string
   domain: Prisma.CollegeDomainCreateNestedOneWithoutCollegesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCollegeInput
 }
 
 export type CollegeUncheckedCreateWithoutUsersInput = {
@@ -462,6 +488,7 @@ export type CollegeUncheckedCreateWithoutUsersInput = {
   campus: string
   domainId: string
   createdAt?: Date | string
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCollegeInput
 }
 
 export type CollegeCreateOrConnectWithoutUsersInput = {
@@ -486,6 +513,7 @@ export type CollegeUpdateWithoutUsersInput = {
   campus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   domain?: Prisma.CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCollegeNestedInput
 }
 
 export type CollegeUncheckedUpdateWithoutUsersInput = {
@@ -494,6 +522,59 @@ export type CollegeUncheckedUpdateWithoutUsersInput = {
   campus?: Prisma.StringFieldUpdateOperationsInput | string
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCollegeNestedInput
+}
+
+export type CollegeCreateWithoutPostsInput = {
+  id?: string
+  name: string
+  campus: string
+  createdAt?: Date | string
+  domain: Prisma.CollegeDomainCreateNestedOneWithoutCollegesInput
+  users?: Prisma.UserCreateNestedManyWithoutCollegeInput
+}
+
+export type CollegeUncheckedCreateWithoutPostsInput = {
+  id?: string
+  name: string
+  campus: string
+  domainId: string
+  createdAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutCollegeInput
+}
+
+export type CollegeCreateOrConnectWithoutPostsInput = {
+  where: Prisma.CollegeWhereUniqueInput
+  create: Prisma.XOR<Prisma.CollegeCreateWithoutPostsInput, Prisma.CollegeUncheckedCreateWithoutPostsInput>
+}
+
+export type CollegeUpsertWithoutPostsInput = {
+  update: Prisma.XOR<Prisma.CollegeUpdateWithoutPostsInput, Prisma.CollegeUncheckedUpdateWithoutPostsInput>
+  create: Prisma.XOR<Prisma.CollegeCreateWithoutPostsInput, Prisma.CollegeUncheckedCreateWithoutPostsInput>
+  where?: Prisma.CollegeWhereInput
+}
+
+export type CollegeUpdateToOneWithWhereWithoutPostsInput = {
+  where?: Prisma.CollegeWhereInput
+  data: Prisma.XOR<Prisma.CollegeUpdateWithoutPostsInput, Prisma.CollegeUncheckedUpdateWithoutPostsInput>
+}
+
+export type CollegeUpdateWithoutPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  campus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  domain?: Prisma.CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput
+  users?: Prisma.UserUpdateManyWithoutCollegeNestedInput
+}
+
+export type CollegeUncheckedUpdateWithoutPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  campus?: Prisma.StringFieldUpdateOperationsInput | string
+  domainId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutCollegeNestedInput
 }
 
 export type CollegeCreateManyDomainInput = {
@@ -509,6 +590,7 @@ export type CollegeUpdateWithoutDomainInput = {
   campus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutCollegeNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCollegeNestedInput
 }
 
 export type CollegeUncheckedUpdateWithoutDomainInput = {
@@ -517,6 +599,7 @@ export type CollegeUncheckedUpdateWithoutDomainInput = {
   campus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutCollegeNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCollegeNestedInput
 }
 
 export type CollegeUncheckedUpdateManyWithoutDomainInput = {
@@ -533,10 +616,12 @@ export type CollegeUncheckedUpdateManyWithoutDomainInput = {
 
 export type CollegeCountOutputType = {
   users: number
+  posts: number
 }
 
 export type CollegeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | CollegeCountOutputTypeCountUsersArgs
+  posts?: boolean | CollegeCountOutputTypeCountPostsArgs
 }
 
 /**
@@ -556,6 +641,13 @@ export type CollegeCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.UserWhereInput
 }
 
+/**
+ * CollegeCountOutputType without action
+ */
+export type CollegeCountOutputTypeCountPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostWhereInput
+}
+
 
 export type CollegeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -565,6 +657,7 @@ export type CollegeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   domain?: boolean | Prisma.CollegeDomainDefaultArgs<ExtArgs>
   users?: boolean | Prisma.College$usersArgs<ExtArgs>
+  posts?: boolean | Prisma.College$postsArgs<ExtArgs>
   _count?: boolean | Prisma.CollegeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["college"]>
 
@@ -598,6 +691,7 @@ export type CollegeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type CollegeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   domain?: boolean | Prisma.CollegeDomainDefaultArgs<ExtArgs>
   users?: boolean | Prisma.College$usersArgs<ExtArgs>
+  posts?: boolean | Prisma.College$postsArgs<ExtArgs>
   _count?: boolean | Prisma.CollegeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CollegeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -612,6 +706,7 @@ export type $CollegePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     domain: Prisma.$CollegeDomainPayload<ExtArgs>
     users: Prisma.$UserPayload<ExtArgs>[]
+    posts: Prisma.$PostPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1015,6 +1110,7 @@ export interface Prisma__CollegeClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   domain<T extends Prisma.CollegeDomainDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollegeDomainDefaultArgs<ExtArgs>>): Prisma.Prisma__CollegeDomainClient<runtime.Types.Result.GetResult<Prisma.$CollegeDomainPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   users<T extends Prisma.College$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.College$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  posts<T extends Prisma.College$postsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.College$postsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1466,6 +1562,30 @@ export type College$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
+ * College.posts
+ */
+export type College$postsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Post
+   */
+  select?: Prisma.PostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Post
+   */
+  omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  where?: Prisma.PostWhereInput
+  orderBy?: Prisma.PostOrderByWithRelationInput | Prisma.PostOrderByWithRelationInput[]
+  cursor?: Prisma.PostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostScalarFieldEnum | Prisma.PostScalarFieldEnum[]
 }
 
 /**

@@ -5,7 +5,7 @@ import { SignUpForm, OTPInput, FormHeader } from "../components";
 import { useState } from "react";
 import { signupFormSchema } from "../validators/signup";
 import { z } from "zod";
-import { useSendRegisterOtpMutation, useVerifyRegisterOtpMutation } from "@/hooks"
+import { useSendRegisterOtpMutation, useVerifyRegisterOtpMutation } from "@/hooks/auth.hooks"
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

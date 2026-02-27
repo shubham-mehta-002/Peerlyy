@@ -18,12 +18,13 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         }
 
         if (!token) {
-            throw new AppError("Unauthorized: No token provided", HTTP_STATUS.UNAUTHORIZED);
+            return next(new AppError("Unauthorized: No token provided", HTTP_STATUS.UNAUTHORIZED));
         }
+
         const decoded = verifyAccessToken(token) as JwtPayload;
 
         if (!decoded || !decoded.userId) {
-            throw new AppError("Unauthorized: Invalid token", HTTP_STATUS.UNAUTHORIZED);
+            return next(new AppError("Unauthorized: Invalid token", HTTP_STATUS.UNAUTHORIZED));
         }
 
         req.user = {
@@ -33,7 +34,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
         next();
     } catch (error) {
-        throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+        next(error);
     }
 };
 

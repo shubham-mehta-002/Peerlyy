@@ -2,6 +2,7 @@ import app from "./app.js";
 import { env } from "./config/env.js";
 import { prisma } from "./config/prisma.js";
 import { connectRedis } from "./config/redis.js";
+import { seedAdminUser } from "./utils/seedAdmin.js";
 
 const PORT = env.PORT || 5000;
 
@@ -13,6 +14,9 @@ async function startServer() {
 
         await connectRedis();
         console.log("Redis connected");
+
+        // Seed admin user if database is empty
+        await seedAdminUser();
 
         const server = app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);

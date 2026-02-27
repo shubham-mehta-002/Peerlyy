@@ -20,13 +20,15 @@ export const generateAccessAndRefreshTokens = async (userId: string, role: strin
 
 export const generateOtp = () => {
     const otp = crypto.randomInt(100000, 999999).toString();
-    console.log({ otp })
+    // TODO: Remove in production - only for development
+    // console.log({ otp })
     return otp;
 };
 
 export const generateResetPasswordToken = (): string => {
     const token = crypto.randomBytes(32).toString("hex");
-    console.log({ token })
+    // TODO: Remove in production - only for development
+    // console.log({ token })
     return token;
 };
 

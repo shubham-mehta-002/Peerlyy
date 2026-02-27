@@ -4,7 +4,7 @@ import * as z from "zod"
 import { loginFormSchema } from "../validators"
 import { Card } from "@/components/ui/card"
 import { FormHeader, LoginForm } from "../components"
-import { useLoginMutation } from "@/hooks"
+import { useLoginMutation } from "@/hooks/auth.hooks";
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 

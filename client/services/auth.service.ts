@@ -2,7 +2,7 @@ import { ApiResponse } from "@/types/admin.types";
 import { AuthResponse, LoginRequest, RegisterInitRequest, RegisterCompleteRequest, User, ForgotPasswordRequest, ResetPasswordRequest, VerifyOtpResponse } from "@/types/auth.types";
 import { axiosInstance } from "@/config/axiosInstance";
 
-export const authServices = {
+export const authService = {
     sendRegisterOtp: async (data: RegisterInitRequest) => {
         const response = await axiosInstance.post<ApiResponse<null>>("/auth/register/init", data);
         return response.data;

@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import { parse } from "node:path";
 
 dotenv.config();
 
@@ -22,6 +21,9 @@ interface EnvConfig {
     RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS: number;
     ACCESS_TOKEN_EXPIRY_SECONDS: number;
     REFRESH_TOKEN_EXPIRY_SECONDS: number;
+    IMAGEKIT_PUBLIC_KEY: string;
+    IMAGEKIT_PRIVATE_KEY: string;
+    IMAGEKIT_URL_ENDPOINT: string;
 }
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -61,5 +63,8 @@ export const env: EnvConfig = {
     OTP_RATE_LIMIT_WINDOW_SECONDS: parseInt(getEnvVar("OTP_RATE_LIMIT_WINDOW_SECONDS", "60"), 10),
     RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS: parseInt(getEnvVar("RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS", "600"), 10),
     ACCESS_TOKEN_EXPIRY_SECONDS: parseInt(getEnvVar("ACCESS_TOKEN_EXPIRY_SECONDS", "900"), 10), // 15 minutes
-    REFRESH_TOKEN_EXPIRY_SECONDS: parseInt(getEnvVar("REFRESH_TOKEN_EXPIRY_SECONDS", "604800"), 10)  // 7 days
+    REFRESH_TOKEN_EXPIRY_SECONDS: parseInt(getEnvVar("REFRESH_TOKEN_EXPIRY_SECONDS", "604800"), 10),  // 7 days
+    IMAGEKIT_PUBLIC_KEY: getEnvVar("IMAGEKIT_PUBLIC_KEY", "pk_test_placeholder"),
+    IMAGEKIT_PRIVATE_KEY: getEnvVar("IMAGEKIT_PRIVATE_KEY", "sk_test_placeholder"),
+    IMAGEKIT_URL_ENDPOINT: getEnvVar("IMAGEKIT_URL_ENDPOINT", "https://ik.imagekit.io/placeholder")
 };

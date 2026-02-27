@@ -10,7 +10,7 @@ import { z } from "zod";
 import { forgotPasswordSchema } from "../validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCwIcon } from "lucide-react";
-import { useForgotPasswordMutation } from "@/hooks/mutations/useForgotPasswordMutation";
+import { useForgotPasswordMutation } from "@/hooks/auth.hooks";
 import { toast } from "sonner";
 
 

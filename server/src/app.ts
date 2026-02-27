@@ -6,6 +6,9 @@ import { notFoundHandler, errorHandler } from './middleware/index.js';
 import authRoutes from "./modules/user/user.route.js";
 import collegeRoutes from "./modules/admin/college/admin.college.route.js";
 import collegeDomainRoutes from "./modules/admin/collegeDomain/admin.collegeDomain.route.js";
+import postRoutes from "./modules/post/post.route.js";
+import voteRoutes from "./modules/vote/vote.route.js";
+import commentRoutes from "./modules/comment/comment.route.js";
 
 const app: Application = express();
 
@@ -17,6 +20,11 @@ app.use(
     })
 );
 
+// TODO: Add express-rate-limit for production
+// npm install express-rate-limit
+// import rateLimit from 'express-rate-limit';
+// const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
+// const apiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -27,6 +35,9 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/college", collegeRoutes)
 app.use("/api/admin/college-domain", collegeDomainRoutes)
+app.use("/api/posts", postRoutes);
+app.use("/api/votes", voteRoutes);
+app.use("/api/comments", commentRoutes);
 
 
 // 404 handler

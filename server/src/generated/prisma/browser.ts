@@ -32,3 +32,18 @@ export type CollegeDomain = Prisma.CollegeDomainModel
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model Post
+ * 
+ */
+export type Post = Prisma.PostModel
+/**
+ * Model Vote
+ * 
+ */
+export type Vote = Prisma.VoteModel
+/**
+ * Model Comment
+ * 
+ */
+export type Comment = Prisma.CommentModel

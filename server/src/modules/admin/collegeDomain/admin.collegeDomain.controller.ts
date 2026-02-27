@@ -6,14 +6,14 @@ import { HTTP_STATUS } from "../../../constants/index.js";
 import { AppError } from "../../../utils/AppError.js";
 
 export const createCollegeDomain = asyncHandler(async (req: Request, res: Response) => {
-    const { domain, isActive } = req.body;
+    const { domain, isActive } = req.validatedBody || req.body;
 
     const exists = await prisma.collegeDomain.findUnique({
         where: { domain }
     });
 
     if (exists) {
-        return ApiResponse.error(res, "Domain already exists", HTTP_STATUS.CONFLICT);
+        throw new AppError("Domain already exists", HTTP_STATUS.CONFLICT);
     }
 
     const record = await prisma.collegeDomain.create({
@@ -28,9 +28,10 @@ export const createCollegeDomain = asyncHandler(async (req: Request, res: Respon
 
 export const getCollegeDomains = asyncHandler(async (req: Request, res: Response) => {
     // Pagination and search
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const search = req.query.search as string;
+    const query = req.validatedQuery || req.query;
+    const page = parseInt(query.page as string) || 1;
+    const limit = parseInt(query.limit as string) || 10;
+    const search = query.search as string;
 
     const skip = (page - 1) * limit;
 
@@ -74,7 +75,8 @@ export const getCollegeDomains = asyncHandler(async (req: Request, res: Response
 });
 
 export const toggleCollegeDomainStatus = asyncHandler(async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const params = req.validatedParams || req.params;
+    const id = params.id as string;
 
     const domain = await prisma.collegeDomain.findUnique({
         where: { id }
@@ -95,7 +97,8 @@ export const toggleCollegeDomainStatus = asyncHandler(async (req: Request, res: 
 });
 
 export const deleteCollegeDomain = asyncHandler(async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const params = req.validatedParams || req.params;
+    const id = params.id as string;
 
     // Check if colleges are associated
     const domain = await prisma.collegeDomain.findUnique({

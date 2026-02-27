@@ -6,7 +6,7 @@ import { ApiResponse } from "../../../utils/ApiResponse.js";
 import { HTTP_STATUS } from '../../../constants/index.js';
 
 export const createCollege = asyncHandler(async (req: Request, res: Response) => {
-    const { name, campus, domain } = req.body;
+    const { name, campus, domain } = req.validatedBody || req.body;
 
     // Find or create the domain
     let collegeDomain = await prisma.collegeDomain.findUnique({
@@ -35,7 +35,8 @@ export const createCollege = asyncHandler(async (req: Request, res: Response) =>
 
 
 export const getCollegesByDomain = asyncHandler(async (req: Request, res: Response) => {
-    const { email } = req.query as { email: string };
+    const query = req.validatedQuery || req.query;
+    const { email } = query as { email: string };
 
     const domain = email.split("@")[1];
 
@@ -52,9 +53,10 @@ export const getCollegesByDomain = asyncHandler(async (req: Request, res: Respon
 });
 
 export const getAllColleges = asyncHandler(async (req: Request, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const search = req.query.search as string;
+    const query = req.validatedQuery || req.query;
+    const page = parseInt(query.page as string) || 1;
+    const limit = parseInt(query.limit as string) || 10;
+    const search = query.search as string;
 
     const skip = (page - 1) * limit;
 
@@ -94,18 +96,44 @@ export const getAllColleges = asyncHandler(async (req: Request, res: Response) =
 });
 
 export const updateCollege = asyncHandler(async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const params = req.validatedParams || req.params;
+    const id = params.id as string;
 
     const college = await prisma.college.update({
         where: { id },
-        data: req.body
+        data: req.validatedBody || req.body
     });
 
     return ApiResponse.success(res, college, "College updated successfully", HTTP_STATUS.OK);
 });
 
 export const deleteCollege = asyncHandler(async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const params = req.validatedParams || req.params;
+    const id = params.id as string;
+
+    // Check if college has associated users or posts
+    const college = await prisma.college.findUnique({
+        where: { id },
+        include: {
+            _count: {
+                select: {
+                    users: true,
+                    posts: true
+                }
+            }
+        }
+    });
+
+    if (!college) {
+        throw new AppError("College not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    if (college._count.users > 0 || college._count.posts > 0) {
+        throw new AppError(
+            `Cannot delete college with existing users (${college._count.users}) or posts (${college._count.posts})`,
+            HTTP_STATUS.BAD_REQUEST
+        );
+    }
 
     await prisma.college.delete({
         where: { id }
