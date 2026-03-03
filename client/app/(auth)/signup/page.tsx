@@ -3,14 +3,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { SignUpForm, OTPInput, FormHeader } from "../components";
 import { useState } from "react";
-import { signupFormSchema } from "../validators/signup";
+import { signupFormSchema } from "../validators/auth.validator";
 import { z } from "zod";
-import { useSendRegisterOtpMutation, useVerifyRegisterOtpMutation } from "@/hooks/auth.hooks"
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
-    const [formStep, setFormStep] = useState(2);
+    const [formStep, setFormStep] = useState(1);
     const [countdown, setCountdown] = useState(0)
 
     const [signupData, setSignupData] = useState({
@@ -18,55 +16,17 @@ export default function SignUpPage() {
         password: ""
     })
 
-    const sendRegisterOtpMutation = useSendRegisterOtpMutation();
-    const verifyRegisterOtpMutation = useVerifyRegisterOtpMutation();
     const router = useRouter();
 
-    const verifyStepOneFormDetails = () => {
-        if (!signupData?.email || !signupData?.password) {
-            toast.error("Please fill all the fields")
-            setFormStep(1)
-            return false;
-        }
 
-        return true;
-    }
-
-    const handleSendOtp = (data: z.infer<typeof signupFormSchema>) => {
+    const handleSendOtpSuccess = (data: z.infer<typeof signupFormSchema>) => {
         setSignupData(data)
-        sendRegisterOtpMutation.mutate({ email: data.email }, {
-            onSuccess: (data: any) => {
-                toast.success(data?.message || "OTP Sent successfully!!")
-                setCountdown(60)
-                setFormStep(2)
-            }
-        })
+        setCountdown(60)
+        setFormStep(2)
     }
 
-    const handleResendOtp = () => {
-        if (!verifyStepOneFormDetails()) return;
-
-        sendRegisterOtpMutation.mutate(
-            { email: signupData.email },
-            {
-                onSuccess: (data: any) => {
-                    toast.success(data?.message || "OTP Sent successfully!!");
-                    setCountdown(60)
-                },
-            }
-        );
-    };
-
-
-    const handleVerifyOtp = (otp: string) => {
-        if (!verifyStepOneFormDetails()) return;
-
-        verifyRegisterOtpMutation.mutate({ email: signupData.email, otp, password: signupData.password }, {
-            onSuccess: (data: any) => {
-                toast.success(data?.message || "OTP Verified successfully!!")
-                router.push("/login")
-            }
-        })
+    const handleVerifyOtpSuccess = () => {
+        router.push("/login")
     }
 
     return (
@@ -74,9 +34,9 @@ export default function SignUpPage() {
             <Card className="w-full sm:max-w-md">
                 <FormHeader description={formStep === 1 ? "Create a new account" : "Verify your email address"} />
                 <CardContent>
-                    {formStep === 1 ? <SignUpForm onSubmit={handleSendOtp} sendRegisterOtpMutation={sendRegisterOtpMutation} />
+                    {formStep === 1 ? <SignUpForm onSuccess={handleSendOtpSuccess} />
                         :
-                        <OTPInput setCountdown={setCountdown} countdown={countdown} onSubmit={handleVerifyOtp} verifyRegisterOtpMutation={verifyRegisterOtpMutation} handleResendOtp={handleResendOtp} />}
+                        <OTPInput email={signupData.email} password={signupData.password} setCountdown={setCountdown} countdown={countdown} onSuccess={handleVerifyOtpSuccess} />}
                 </CardContent>
             </Card>
         </div>

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { forgotPasswordSchema } from "../validators";
+import { forgotPasswordSchema } from "../validators/auth.validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCwIcon } from "lucide-react";
 import { useForgotPasswordMutation } from "@/hooks/auth.hooks";
@@ -25,11 +25,7 @@ export const ForgorPasswordForm = () => {
     const forgotPasswordMutation = useForgotPasswordMutation();
 
     const onSubmit = (data: z.infer<typeof forgotPasswordSchema>) => {
-        forgotPasswordMutation.mutate({ email: data.email }, {
-            onSuccess: (data: any) => {
-                toast.success(data?.message || "Check your email for further instructions")
-            }
-        })
+        forgotPasswordMutation.mutate({ email: data.email })
     }
 
     return (

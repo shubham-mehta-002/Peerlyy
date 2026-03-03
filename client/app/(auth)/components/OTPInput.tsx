@@ -12,15 +12,15 @@ import { RefreshCwIcon } from "lucide-react"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { OTP_LENGTH } from "@/constants/variables"
-import { otpFormSchema } from "../validators/signup"
+import { otpFormSchema } from "../validators/auth.validator"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-
+import { useVerifyRegisterOtpMutation, useSendRegisterOtpMutation } from "@/hooks/auth.hooks"
 
 type OTPInputProps = {
-    onSubmit: (data: string) => void
-    verifyRegisterOtpMutation: any
-    handleResendOtp: () => void
+    email: string
+    password: string
+    onSuccess: () => void
     countdown: number
     setCountdown: Dispatch<SetStateAction<number>>
 }
@@ -28,13 +28,15 @@ type OTPInputProps = {
 type OTPFormSchemaType = z.infer<typeof otpFormSchema>;
 
 export function OTPInput({
-    onSubmit,
-    verifyRegisterOtpMutation,
-    handleResendOtp,
+    email,
+    password,
+    onSuccess,
     setCountdown,
     countdown
 }: OTPInputProps) {
 
+    const verifyRegisterOtpMutation = useVerifyRegisterOtpMutation();
+    const sendRegisterOtpMutation = useSendRegisterOtpMutation();
 
     const form = useForm<OTPFormSchemaType>({
         resolver: zodResolver(otpFormSchema),
@@ -44,14 +46,24 @@ export function OTPInput({
     })
 
     const handleSubmit = (data: OTPFormSchemaType) => {
-        onSubmit(data.otp)
+        verifyRegisterOtpMutation.mutate({ email, otp: data.otp, password }, {
+            onSuccess: () => {
+                onSuccess();
+            }
+        });
     }
 
     const handleResend = () => {
         if (countdown > 0) return
 
-        handleResendOtp()
-        setCountdown(60) // 60 second cooldown
+        sendRegisterOtpMutation.mutate(
+            { email },
+            {
+                onSuccess: () => {
+                    setCountdown(60) // 60 second cooldown
+                },
+            }
+        );
     }
 
     // Countdown timer

@@ -1,7 +1,7 @@
 'use client'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { resetPasswordSchema } from "../validators"
+import { resetPasswordSchema } from "../validators/auth.validator"
 import { z } from "zod"
 import { FieldError, FieldGroup } from "@/components/ui/field"
 import { Field } from "@/components/ui/field"
@@ -13,9 +13,13 @@ import { Button } from "@/components/ui/button"
 import { CardContent } from "@/components/ui/card"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
+import { useResetPasswordMutation } from "@/hooks/auth.hooks"
+import { useRouter } from "next/navigation"
 
 
-export const ResetPasswordForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof resetPasswordSchema>) => void }) => {
+export const ResetPasswordForm = ({ token }: { token: string }) => {
+    const resetPasswordMutation = useResetPasswordMutation();
+    const router = useRouter();
     const form = useForm<z.infer<typeof resetPasswordSchema>>({
         resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
@@ -26,6 +30,15 @@ export const ResetPasswordForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeo
 
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+    const onSubmit = (data: z.infer<typeof resetPasswordSchema>) => {
+        resetPasswordMutation.mutate({ newPassword: data.newPassword, token }, {
+            onSuccess: () => {
+                router.push("/login")
+            }
+        })
+    }
+
     return (
         <CardContent>
             <form id="form-rhf-reset-password" onSubmit={form.handleSubmit(onSubmit)}>
@@ -91,7 +104,7 @@ export const ResetPasswordForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeo
                         )}
                     />
 
-                    <Button type="submit" className="py-3 cursor-pointer"><p className="text-sm text-shadow-muted-foreground">Reset Password</p></Button>
+                    <Button type="submit" disabled={resetPasswordMutation.isPending} className="py-3 cursor-pointer"><p className="text-sm text-shadow-muted-foreground">{resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}</p></Button>
 
                 </FieldGroup>
             </form>

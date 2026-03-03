@@ -2,7 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { FormHeader } from "../components/FormHeader";
 import { ResetPasswordForm } from "../components/ResetPasswordForm";
-import { resetPasswordSchema } from "../validators/reset-password";
+import { resetPasswordSchema } from "../validators/auth.validator";
 import { z } from "zod";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useResetPasswordMutation } from "@/hooks/auth.hooks";
@@ -12,17 +12,6 @@ import { Suspense } from "react";
 const ResetPasswordContent = () => {
     const searchParams = useSearchParams()
     const token = searchParams.get('token')
-    const router = useRouter()
-    const resetPasswordMutation = useResetPasswordMutation();
-
-    const onSubmit = (data: z.infer<typeof resetPasswordSchema>) => {
-        resetPasswordMutation.mutate({ newPassword: data.newPassword, token: token as string }, {
-            onSuccess: (data: any) => {
-                toast.success(data?.message || "Password reset successfully !!")
-                router.push("/login")
-            }
-        })
-    }
 
     return (
         <div className="mx-5 flex flex-col items-center justify-center min-h-screen">
@@ -35,7 +24,7 @@ const ResetPasswordContent = () => {
                     <div className="flex items-center justify-center pb-6">
                         <p className="text-destructive font-medium">Token is missing or invalid</p>
                     </div> :
-                    <ResetPasswordForm onSubmit={onSubmit} />}
+                    <ResetPasswordForm token={token as string} />}
             </Card>
         </div>
     )

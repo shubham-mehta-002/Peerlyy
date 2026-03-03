@@ -10,6 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, Trash2, RotateCcw, Pencil } from 'lucide-react';
 import { College } from '@/types/admin.types';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from 'react';
 
 interface CollegeTableProps {
     data: College[] | undefined;
@@ -28,6 +40,8 @@ export function CollegeTable({
     onToggleStatus,
     onEdit
 }: CollegeTableProps) {
+    const [collegeToDelete, setCollegeToDelete] = useState<string | null>(null);
+
     return (
         <div className="rounded-md border bg-card">
             <Table>
@@ -97,18 +111,39 @@ export function CollegeTable({
                                         >
                                             <Pencil className="h-4 w-4 text-blue-500" />
                                         </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => {
-                                                if (confirm('Are you sure you want to delete this college?')) {
-                                                    onDelete(college.id);
-                                                }
-                                            }}
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                        <AlertDialog open={collegeToDelete === college.id} onOpenChange={(isOpen) => !isOpen && setCollegeToDelete(null)}>
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => setCollegeToDelete(college.id)}
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete the college
+                                                        <strong> {college.name}</strong> from the system.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => {
+                                                            onDelete(college.id);
+                                                            setCollegeToDelete(null);
+                                                        }}
+                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                    >
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
                                 </TableCell>
                             </TableRow>

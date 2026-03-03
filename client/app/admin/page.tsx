@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminService } from '@/services/admin.service';
-import { QUERY_KEYS } from '@/constants/query-keys';
-import { toast } from 'sonner';
+import { useColleges, useCreateCollege, useToggleDomainStatus, useDeleteCollege, useUpdateCollege } from '@/hooks/admin.hooks';
+import { useDebounce } from '@/hooks/use-debounce';
+import { ADMIN_COLLEGES_PAGE_LIMIT } from '@/constants/variables';
 import { Button } from '@/components/ui/button';
 import { AdminHeader } from './components/AdminHeader';
 import { AddCollegeDialog } from './components/AddCollegeDialog';
@@ -15,75 +14,30 @@ import { College } from '@/types/admin.types';
 
 export default function AdminPage() {
     const [page, setPage] = useState(1);
-    const [limit] = useState(10);
     const [search, setSearch] = useState('');
+    const debouncedSearch = useDebounce(search, 500);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingCollege, setEditingCollege] = useState<College | null>(null);
 
-    const queryClient = useQueryClient();
-
     // Fetch Colleges
-    const { data, isLoading, isError } = useQuery({
-        queryKey: [QUERY_KEYS.ADMIN.COLLEGES, page, search],
-        queryFn: () => adminService.getAllColleges(page, limit, search),
-        placeholderData: (previousData) => previousData,
-    });
+    const { data, isLoading, isError } = useColleges(page, ADMIN_COLLEGES_PAGE_LIMIT, debouncedSearch);
 
     // Mutations
-    const createMutation = useMutation({
-        mutationFn: (data: { name: string; campus: string; domain: string }) =>
-            adminService.createCollege(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ADMIN.COLLEGES] });
-            toast.success('College added successfully');
-            setIsAddModalOpen(false);
-        },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to add college');
-        },
-    });
-
-    const toggleMutation = useMutation({
-        mutationFn: (id: string) => adminService.toggleCollegeDomainStatus(id),
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ADMIN.COLLEGES] });
-            toast.success(`Domain ${data.data.isActive ? 'activated' : 'deactivated'}`);
-        },
-        onError: (error: any) => {
-            toast.error('Failed to update status');
-        },
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: (id: string) => adminService.deleteCollege(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ADMIN.COLLEGES] });
-            toast.success('College deleted successfully');
-        },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to delete college');
-        },
-    });
-
-    const editMutation = useMutation({
-        mutationFn: (data: { id: string; name: string; campus: string }) =>
-            adminService.updateCollege(data.id, { name: data.name, campus: data.campus }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ADMIN.COLLEGES] });
-            toast.success('College updated successfully');
-            setEditingCollege(null);
-        },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to update college');
-        },
-    });
+    const createMutation = useCreateCollege();
+    const toggleMutation = useToggleDomainStatus();
+    const deleteMutation = useDeleteCollege();
+    const editMutation = useUpdateCollege();
 
     const handleAddCollege = (data: { name: string; campus: string; domain: string }) => {
-        createMutation.mutate(data);
+        createMutation.mutate(data, {
+            onSuccess: () => setIsAddModalOpen(false)
+        });
     };
 
     const handleEditCollege = (id: string, data: { name: string; campus: string }) => {
-        editMutation.mutate({ id, ...data });
+        editMutation.mutate({ id, ...data }, {
+            onSuccess: () => setEditingCollege(null)
+        });
     };
 
     return (

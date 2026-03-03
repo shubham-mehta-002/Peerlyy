@@ -13,13 +13,26 @@ import {
 import { CardContent } from "@/components/ui/card"
 import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
-import { loginFormSchema } from "../validators"
+import { loginFormSchema } from "../validators/auth.validator"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
+import { useLoginMutation } from "@/hooks/auth.hooks"
+import { useRouter } from "next/navigation"
 
-export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof loginFormSchema>) => void }) => {
+export const LoginForm = () => {
+    const loginMutation = useLoginMutation();
+    const router = useRouter();
+
+    const onSubmit = (data: z.infer<typeof loginFormSchema>) => {
+        loginMutation.mutate({ email: data.email, password: data.password }, {
+            onSuccess: () => {
+                router.push("/")
+            }
+        })
+    }
+
     const form = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
         defaultValues: {
@@ -46,6 +59,7 @@ export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof loginF
                                         {...field}
                                         id="form-rhf-demo-email"
                                         placeholder="Your college email ID"
+                                        type="email"
                                     />
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
@@ -84,7 +98,7 @@ export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof loginF
                             )}
                         />
 
-                        <Button className="py-3 cursor-pointer"><p className="text-sm text-shadow-muted-foreground">Login</p></Button>
+                        <Button disabled={loginMutation.isPending} className="py-3 cursor-pointer"><p className="text-sm text-shadow-muted-foreground">{loginMutation.isPending ? "Logging in..." : "Login"}</p></Button>
 
                         {/* <div className="relative">
                             <div className="absolute inset-0 flex items-center">

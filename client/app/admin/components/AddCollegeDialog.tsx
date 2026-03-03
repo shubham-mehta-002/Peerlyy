@@ -1,6 +1,5 @@
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -10,17 +9,14 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Loader2 } from 'lucide-react';
-import { twMerge } from 'tailwind-merge';
-
-const addCollegeSchema = z.object({
-    name: z.string().min(2, 'College name must be at least 2 characters'),
-    campus: z.string().min(2, 'Campus name must be at least 2 characters'),
-    domain: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/, 'Invalid domain format'),
-});
-
-type AddCollegeFormValues = z.infer<typeof addCollegeSchema>;
+import { addCollegeSchema, type AddCollegeFormValues } from '../validators/admin.validator';
 
 interface AddCollegeDialogProps {
     isOpen: boolean;
@@ -31,9 +27,9 @@ interface AddCollegeDialogProps {
 
 export function AddCollegeDialog({ isOpen, onOpenChange, onSubmit, isPending }: AddCollegeDialogProps) {
     const {
-        register,
+        control,
         handleSubmit,
-        formState: { errors },
+        formState: { isSubmitting },
         reset,
     } = useForm<AddCollegeFormValues>({
         resolver: zodResolver(addCollegeSchema),
@@ -61,79 +57,73 @@ export function AddCollegeDialog({ isOpen, onOpenChange, onSubmit, isPending }: 
                     <DialogTitle>Add New College</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 pt-6">
-                    <div className="space-y-4">
-                        <div className="grid gap-2 group">
-                            <Label
-                                htmlFor="name"
-                                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors group-focus-within:text-primary"
-                            >
-                                College Name
-                            </Label>
-                            <Input
-                                id="name"
-                                placeholder="University of Technology"
-                                className={twMerge(
-                                    "bg-secondary/50 border-border/50 focus:border-primary/50 transition-all duration-300",
-                                    errors.name && "border-destructive/50 focus:border-destructive"
-                                )}
-                                {...register('name')}
-                            />
-                            {errors.name && (
-                                <p className="text-[0.8rem] font-medium text-destructive animate-in fade-in slide-in-from-top-1">
-                                    {errors.name.message}
-                                </p>
+                    <FieldGroup>
+                        <Controller
+                            name="name"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <Field>
+                                    <FieldLabel htmlFor="name">
+                                        College Name
+                                    </FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="name"
+                                        placeholder="University of Technology"
+                                        className="bg-secondary/50 border-border/50 focus:border-primary/50 transition-all duration-300"
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
                             )}
-                        </div>
+                        />
 
-                        <div className="grid gap-2 group">
-                            <Label
-                                htmlFor="campus"
-                                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors group-focus-within:text-primary"
-                            >
-                                Campus
-                            </Label>
-                            <Input
-                                id="campus"
-                                placeholder="Main Campus"
-                                className={twMerge(
-                                    "bg-secondary/50 border-border/50 focus:border-primary/50 transition-all duration-300",
-                                    errors.campus && "border-destructive/50 focus:border-destructive"
-                                )}
-                                {...register('campus')}
-                            />
-                            {errors.campus && (
-                                <p className="text-[0.8rem] font-medium text-destructive animate-in fade-in slide-in-from-top-1">
-                                    {errors.campus.message}
-                                </p>
+                        <Controller
+                            name="campus"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <Field>
+                                    <FieldLabel htmlFor="campus">
+                                        Campus
+                                    </FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="campus"
+                                        placeholder="Main Campus"
+                                        className="bg-secondary/50 border-border/50 focus:border-primary/50 transition-all duration-300"
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
                             )}
-                        </div>
+                        />
 
-                        <div className="grid gap-2 group">
-                            <Label
-                                htmlFor="domain"
-                                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors group-focus-within:text-primary"
-                            >
-                                Domain Name
-                            </Label>
-                            <Input
-                                id="domain"
-                                placeholder="tech.edu"
-                                className={twMerge(
-                                    "bg-secondary/50 border-border/50 focus:border-primary/50 transition-all duration-300",
-                                    errors.domain && "border-destructive/50 focus:border-destructive"
-                                )}
-                                {...register('domain')}
-                            />
-                            {errors.domain && (
-                                <p className="text-[0.8rem] font-medium text-destructive animate-in fade-in slide-in-from-top-1">
-                                    {errors.domain.message}
-                                </p>
+                        <Controller
+                            name="domain"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <Field>
+                                    <FieldLabel htmlFor="domain">
+                                        Domain Name
+                                    </FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="domain"
+                                        placeholder="tech.edu"
+                                        className="bg-secondary/50 border-border/50 focus:border-primary/50 transition-all duration-300"
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                    <p className="text-[0.7rem] text-muted-foreground italic">
+                                        This domain will be automatically whitelisted and linked.
+                                    </p>
+                                </Field>
                             )}
-                            <p className="text-[0.7rem] text-muted-foreground italic">
-                                This domain will be automatically whitelisted and linked.
-                            </p>
-                        </div>
-                    </div>
+                        />
+                    </FieldGroup>
 
                     <DialogFooter className="pt-2">
                         <Button

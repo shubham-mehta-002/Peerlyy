@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
-import { signupFormSchema } from "../validators"
+import { signupFormSchema } from "../validators/auth.validator"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -31,16 +31,14 @@ import { useState } from "react"
 
 
 
-type SendRegisterOtpMutation = ReturnType<typeof useSendRegisterOtpMutation>
-
 type SignUpFormProps = {
-    onSubmit: (data: z.infer<typeof signupFormSchema>) => void
-    sendRegisterOtpMutation: SendRegisterOtpMutation
+    onSuccess: (data: z.infer<typeof signupFormSchema>) => void
 }
 
 
 
-export function SignUpForm({ onSubmit, sendRegisterOtpMutation }: SignUpFormProps) {
+export function SignUpForm({ onSuccess }: SignUpFormProps) {
+    const sendRegisterOtpMutation = useSendRegisterOtpMutation();
     const form = useForm<z.infer<typeof signupFormSchema>>({
         resolver: zodResolver(signupFormSchema),
         defaultValues: {
@@ -54,9 +52,17 @@ export function SignUpForm({ onSubmit, sendRegisterOtpMutation }: SignUpFormProp
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
 
+    const handleSubmit = (data: z.infer<typeof signupFormSchema>) => {
+        sendRegisterOtpMutation.mutate({ email: data.email }, {
+            onSuccess: () => {
+                onSuccess(data);
+            }
+        });
+    }
+
     return (
         <>
-            <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+            <form id="form-rhf-demo" onSubmit={form.handleSubmit(handleSubmit)}>
                 <FieldGroup>
                     <Controller
                         name="email"
