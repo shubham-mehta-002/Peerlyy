@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button"
 import {
     Field,
+    FieldError,
     FieldGroup,
     FieldLabel,
 } from "@/components/ui/field"
@@ -28,7 +29,6 @@ export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof loginF
     })
 
     const [showPassword, setShowPassword] = useState(false);
-
     return (
         <>
             <CardContent>
@@ -37,7 +37,7 @@ export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof loginF
                         <Controller
                             name="email"
                             control={form.control}
-                            render={({ field }) => (
+                            render={({ field, fieldState }) => (
                                 <Field>
                                     <FieldLabel htmlFor="form-rhf-demo-email">
                                         Email
@@ -47,13 +47,16 @@ export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof loginF
                                         id="form-rhf-demo-email"
                                         placeholder="Your college email ID"
                                     />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
                                 </Field>
                             )}
                         />
                         <Controller
                             name="password"
                             control={form.control}
-                            render={({ field }) => (
+                            render={({ field, fieldState }) => (
                                 <Field>
                                     <FieldLabel htmlFor="form-rhf-demo-password" className="flex justify-between">
                                         Password
@@ -74,6 +77,9 @@ export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.infer<typeof loginF
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                         </button>
                                     </InputGroup>
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
                                 </Field>
                             )}
                         />

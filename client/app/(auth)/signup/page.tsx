@@ -10,7 +10,9 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
-    const [formStep, setFormStep] = useState(1);
+    const [formStep, setFormStep] = useState(2);
+    const [countdown, setCountdown] = useState(0)
+
     const [signupData, setSignupData] = useState({
         email: "",
         password: ""
@@ -20,27 +22,36 @@ export default function SignUpPage() {
     const verifyRegisterOtpMutation = useVerifyRegisterOtpMutation();
     const router = useRouter();
 
+    const verifyStepOneFormDetails = () => {
+        if (!signupData?.email || !signupData?.password) {
+            toast.error("Please fill all the fields")
+            setFormStep(1)
+            return false;
+        }
+
+        return true;
+    }
+
     const handleSendOtp = (data: z.infer<typeof signupFormSchema>) => {
         setSignupData(data)
         sendRegisterOtpMutation.mutate({ email: data.email }, {
             onSuccess: (data: any) => {
                 toast.success(data?.message || "OTP Sent successfully!!")
+                setCountdown(60)
                 setFormStep(2)
             }
         })
     }
 
     const handleResendOtp = () => {
-        if (!signupData?.email) {
-            toast.error("Email not found. Please restart signup.");
-            return;
-        }
+        if (!verifyStepOneFormDetails()) return;
 
         sendRegisterOtpMutation.mutate(
             { email: signupData.email },
             {
                 onSuccess: (data: any) => {
                     toast.success(data?.message || "OTP Sent successfully!!");
+                    setCountdown(60)
                 },
             }
         );
@@ -48,6 +59,8 @@ export default function SignUpPage() {
 
 
     const handleVerifyOtp = (otp: string) => {
+        if (!verifyStepOneFormDetails()) return;
+
         verifyRegisterOtpMutation.mutate({ email: signupData.email, otp, password: signupData.password }, {
             onSuccess: (data: any) => {
                 toast.success(data?.message || "OTP Verified successfully!!")
@@ -63,7 +76,7 @@ export default function SignUpPage() {
                 <CardContent>
                     {formStep === 1 ? <SignUpForm onSubmit={handleSendOtp} sendRegisterOtpMutation={sendRegisterOtpMutation} />
                         :
-                        <OTPInput onSubmit={handleVerifyOtp} verifyRegisterOtpMutation={verifyRegisterOtpMutation} handleResendOtp={handleResendOtp} />}
+                        <OTPInput setCountdown={setCountdown} countdown={countdown} onSubmit={handleVerifyOtp} verifyRegisterOtpMutation={verifyRegisterOtpMutation} handleResendOtp={handleResendOtp} />}
                 </CardContent>
             </Card>
         </div>

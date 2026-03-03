@@ -1,6 +1,7 @@
 import { z } from "zod"
+import { emailSchema } from "./common"
 
 export const loginFormSchema = z.object({
-    email: z.email().trim(),
-    password: z.string().trim()
+    email: emailSchema,
+    password: z.string().trim().min(1, "Password is required")
 })

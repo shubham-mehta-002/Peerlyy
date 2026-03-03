@@ -16,6 +16,7 @@ export function LoginPage() {
     const onSubmit = (data: z.infer<typeof loginFormSchema>) => {
         loginMutation.mutate({ email: data.email, password: data.password }, {
             onSuccess: (data: any) => {
+                console.log({ data })
                 toast.success(data?.message || "Login successful")
                 router.push("/")
             }

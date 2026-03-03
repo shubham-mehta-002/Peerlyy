@@ -9,3 +9,4 @@ export const passwordSchema = z
         "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
     );
 
+export const emailSchema = z.string().trim().min(1, "Email is required").email("Invalid email address");

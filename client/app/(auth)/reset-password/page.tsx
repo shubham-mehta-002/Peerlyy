@@ -5,7 +5,7 @@ import { ResetPasswordForm } from "../components/ResetPasswordForm";
 import { resetPasswordSchema } from "../validators/reset-password";
 import { z } from "zod";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useResetPasswordMutation } from "@/hooks/mutations/useResetPasswordMutation";
+import { useResetPasswordMutation } from "@/hooks/auth.hooks";
 import { toast } from "sonner";
 import { Suspense } from "react";
 

@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/hover-card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { useSendRegisterOtpMutation } from "@/hooks"
+import { useSendRegisterOtpMutation } from "@/hooks/auth.hooks"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 
@@ -73,7 +73,7 @@ export function SignUpForm({ onSubmit, sendRegisterOtpMutation }: SignUpFormProp
                                         </HoverCardTrigger>
                                         <HoverCardContent className="flex w-64 flex-col gap-0.5">
                                             <div className="font-semibold">
-                                                Only .edu email IDs are allowed.
+                                                Only college email IDs are allowed.
                                             </div>
                                         </HoverCardContent>
                                     </HoverCard>

@@ -2,7 +2,7 @@
 
 import { useForm, Controller } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { Field, FieldLabel } from "@/components/ui/field"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import {
     InputOTP,
     InputOTPGroup,
@@ -10,33 +10,40 @@ import {
 } from "@/components/ui/input-otp"
 import { RefreshCwIcon } from "lucide-react"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { OTP_LENGTH } from "@/constants/variables"
+import { otpFormSchema } from "../validators/signup"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-type OTPFormData = {
-    otp: string
-}
 
 type OTPInputProps = {
     onSubmit: (data: string) => void
     verifyRegisterOtpMutation: any
     handleResendOtp: () => void
+    countdown: number
+    setCountdown: Dispatch<SetStateAction<number>>
 }
+
+type OTPFormSchemaType = z.infer<typeof otpFormSchema>;
 
 export function OTPInput({
     onSubmit,
     verifyRegisterOtpMutation,
     handleResendOtp,
+    setCountdown,
+    countdown
 }: OTPInputProps) {
 
-    const [countdown, setCountdown] = useState(0)
 
-    const form = useForm<OTPFormData>({
+    const form = useForm<OTPFormSchemaType>({
+        resolver: zodResolver(otpFormSchema),
         defaultValues: {
             otp: "",
         },
     })
 
-    const handleSubmit = (data: OTPFormData) => {
+    const handleSubmit = (data: OTPFormSchemaType) => {
         onSubmit(data.otp)
     }
 
@@ -51,11 +58,11 @@ export function OTPInput({
     useEffect(() => {
         if (countdown === 0) return
 
-        const timer = setInterval(() => {
+        const timer = setTimeout(() => {
             setCountdown((prev) => prev - 1)
         }, 1000)
 
-        return () => clearInterval(timer)
+        return () => clearTimeout(timer)
     }, [countdown])
 
     return (
@@ -69,19 +76,24 @@ export function OTPInput({
                 <Controller
                     name="otp"
                     control={form.control}
-                    render={({ field }) => (
-                        <InputOTP
-                            maxLength={6}
-                            value={field.value}
-                            onChange={field.onChange}
-                            pattern={REGEXP_ONLY_DIGITS}
-                        >
-                            <InputOTPGroup className="mx-auto">
-                                {[0, 1, 2, 3, 4, 5].map((i) => (
-                                    <InputOTPSlot key={i} index={i} className="h-10 w-10 text-xl" />
-                                ))}
-                            </InputOTPGroup>
-                        </InputOTP>
+                    render={({ field, fieldState }) => (
+                        <>
+                            <InputOTP
+                                maxLength={OTP_LENGTH}
+                                value={field.value}
+                                onChange={field.onChange}
+                                pattern={REGEXP_ONLY_DIGITS}
+                            >
+                                <InputOTPGroup className="mx-auto">
+                                    {Array.from({ length: OTP_LENGTH }).map((_, i) => (
+                                        <InputOTPSlot key={i} index={i} className="h-10 w-10 text-xl" />
+                                    ))}
+                                </InputOTPGroup>
+                            </InputOTP>
+                            {fieldState.invalid && (
+                                <FieldError className="text-center" errors={[fieldState.error]} />
+                            )}
+                        </>
                     )}
                 />
 

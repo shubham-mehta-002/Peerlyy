@@ -1,9 +1,7 @@
 'use client'
 
 import { Card, CardContent } from "@/components/ui/card";
-import { FormHeader } from "../components";
-import { z } from "zod";
-import { ForgorPasswordForm } from "../components";
+import { FormHeader, ForgorPasswordForm } from "../components";
 
 
 const ForgotPasswordPage = () => {
