@@ -48,7 +48,7 @@ export const env: EnvConfig = {
     // Auth
     JWT_ACCESS_SECRET: getEnvVar("JWT_ACCESS_SECRET"),
     JWT_REFRESH_SECRET: getEnvVar("JWT_REFRESH_SECRET"),
-    GOOGLE_CLIENT_ID: getEnvVar("GOOGLE_CLIENT_ID"),
+    GOOGLE_CLIENT_ID: getEnvVar("GOOGLE_CLIENT_ID", ""),
 
     // Email
     SMTP_HOST: getEnvVar("SMTP_HOST"),

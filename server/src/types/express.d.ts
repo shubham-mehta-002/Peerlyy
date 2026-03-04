@@ -7,6 +7,9 @@ declare global {
             };
             file?: Express.Multer.File;
             files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
+            validatedBody?: any;
+            validatedQuery?: any;
+            validatedParams?: any;
         }
 
     }

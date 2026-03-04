@@ -7,8 +7,9 @@ import { HTTP_STATUS } from "../constants/httpStatusCodes.js";
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log({ header: req.headers, cookies: req.cookies })
         const authHeader = req.headers.authorization;
-
+        console.log({ authHeader })
         let token;
 
         if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -41,7 +42,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 export const authorize = (roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!req.user || !roles.includes(req.user.role)) {
-            throw new AppError("Forbidden: Insufficient permissions", HTTP_STATUS.FORBIDDEN);
+            return next(new AppError("Forbidden: Insufficient permissions", HTTP_STATUS.FORBIDDEN));
         }
         next();
     };

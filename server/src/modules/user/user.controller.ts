@@ -3,7 +3,7 @@ import { prisma } from "../../config/prisma.js";
 import { env } from "../../config/env.js";
 import { AuthProvider } from "../../constants/authProvider.enum.js";
 import { HTTP_STATUS } from "../../constants/index.js";
-import { generateAccessAndRefreshTokens, generateOtp, asyncHandler, getDomain, getNormalizedEmail, checkOtpAttempts, generateResetPasswordToken, ApiResponse, AppError, sendEmail, comparePassword, hashPassword, hashToken, generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/index.js";
+import { generateAndUpdateTokensInDB, generateOtp, asyncHandler, getDomain, getNormalizedEmail, checkOtpAttempts, generateResetPasswordToken, ApiResponse, AppError, sendEmail, comparePassword, hashPassword, hashToken, verifyRefreshToken } from "../../utils/index.js";
 import { redis } from "../../config/redis.js";
 import { toUserResponse } from "./user.mapper.js";
 
@@ -18,17 +18,17 @@ export const registerInit = asyncHandler(async (req: Request, res: Response) => 
         throw new AppError("User already exists", HTTP_STATUS.CONFLICT);
     }
 
-    await checkOtpAttempts(email);
-
     // Domain Allowlist Check
     const domain = getDomain(email);
     const isWhitelisted = await prisma.collegeDomain.findUnique({
-        where: { domain },
+        where: { domain, isActive: true },
     });
 
-    if (!isWhitelisted || !isWhitelisted.isActive) {
+    if (!isWhitelisted) {
         throw new AppError("Email domain not supported", HTTP_STATUS.FORBIDDEN);
     }
+
+    await checkOtpAttempts(email);
 
     const otp = generateOtp();
 
@@ -95,7 +95,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     const isMatch = await comparePassword(password, user.password as string);
     if (!isMatch) throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user.id, user.role);
+    const { accessToken, refreshToken } = await generateAndUpdateTokensInDB(user.id, user.role);
 
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -112,8 +112,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     });
 
     return ApiResponse.success(res, {
-        user: toUserResponse(user),
-        accessToken
+        user: toUserResponse(user)
     }, "Logged in successfully", HTTP_STATUS.OK)
 });
 
@@ -162,8 +161,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 //         });
 //     }
 
-//     const accessToken = generateAccessToken(user.id, user.role);
-//     const refreshToken = generateRefreshToken(user.id);
+//     const accessToken =      const refreshToken = generateRefreshToken(user.id);
 
 //     await prisma.user.update({
 //         where: { id: user.id },
@@ -199,7 +197,7 @@ export const requestPasswordReset = asyncHandler(async (req: Request, res: Respo
     await redis.setEx(`token:reset:${hashedToken}`, env.RESET_PASSWORD_REQUEST_TOKEN_EXPIRY_SECONDS, user.id.toString());
     await sendEmail(email, "Password Reset Token sent to email", `Visit here to reset password  --> ${env.APP_URL}/reset-password?token=${rawToken}`);
 
-    return ApiResponse.success(res, null, "Token sent successfully", HTTP_STATUS.OK);
+    return ApiResponse.success(res, null, "Check your email for further instructions", HTTP_STATUS.OK);
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
@@ -228,15 +226,22 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
 
 export const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
     const incomingRefreshToken = req.cookies.refreshToken;
+    if (!incomingRefreshToken)
+        throw new AppError("Refresh token not found", HTTP_STATUS.UNAUTHORIZED);
 
     const decodedRefreshToken = verifyRefreshToken(incomingRefreshToken);
 
     const user = await prisma.user.findUnique({ where: { id: decodedRefreshToken.userId } });
 
-    if (!user)
+    if (!user || !user.refreshToken)
         throw new AppError("Invalid or expired refresh token", HTTP_STATUS.UNAUTHORIZED);
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user.id, user.role);
+    const hashedIncomingToken = hashToken(incomingRefreshToken);
+    if (user.refreshToken !== hashedIncomingToken) {
+        throw new AppError("Invalid or expired refresh token", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const { accessToken, refreshToken } = await generateAndUpdateTokensInDB(user.id, user.role);
 
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -278,13 +283,13 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
 
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "strict"
     });
 
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "strict"
     });
 

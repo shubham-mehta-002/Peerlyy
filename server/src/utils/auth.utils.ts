@@ -5,14 +5,17 @@ import { HTTP_STATUS } from "../constants/index.js";
 import { redis } from "../config/redis.js";
 import { env } from "../config/env.js";
 import crypto from "crypto";
+import { hashToken } from "./hash.js";
 
-export const generateAccessAndRefreshTokens = async (userId: string, role: string) => {
+export const generateAndUpdateTokensInDB = async (userId: string, role: string) => {
     const accessToken = generateAccessToken(userId, role);
     const refreshToken = generateRefreshToken(userId, role);
 
+    const hashedRefreshToken = hashToken(refreshToken);
+
     await prisma.user.update({
         where: { id: userId },
-        data: { refreshToken }
+        data: { refreshToken: hashedRefreshToken }
     })
 
     return { accessToken, refreshToken };
@@ -34,7 +37,7 @@ export const generateResetPasswordToken = (): string => {
 
 export const getDomain = (email: string) => {
     const [, domain] = email.toLowerCase().trim().split("@");
-    if (!domain) throw new AppError("Invalid email", 400);
+    if (!domain) throw new AppError("Invalid email", HTTP_STATUS.BAD_REQUEST);
     return domain;
 }
 
@@ -55,7 +58,7 @@ export const checkOtpAttempts = async (email: string) => {
     }
 
     if (attempts > env.OTP_ATTEMPT_LIMIT) {
-        throw new AppError("Too many OTP attempts. Try again in 1 minute.", 429);
+        throw new AppError("Too many OTP attempts. Try again in 1 minute.", HTTP_STATUS.TOO_MANY_REQUESTS);
     }
 
     return attempts;
