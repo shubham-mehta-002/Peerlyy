@@ -6,7 +6,7 @@ import { HTTP_STATUS } from "../../../constants/index.js";
 import { AppError } from "../../../utils/AppError.js";
 
 export const createCollegeDomain = asyncHandler(async (req: Request, res: Response) => {
-    const { domain, isActive } = req.validatedBody || req.body;
+    const { domain } = req.validatedBody || req.body;
 
     const exists = await prisma.collegeDomain.findUnique({
         where: { domain }
@@ -19,7 +19,7 @@ export const createCollegeDomain = asyncHandler(async (req: Request, res: Respon
     const record = await prisma.collegeDomain.create({
         data: {
             domain,
-            isActive: isActive !== undefined ? isActive : true
+            isActive: true
         }
     });
 
@@ -64,7 +64,7 @@ export const getCollegeDomains = asyncHandler(async (req: Request, res: Response
     ]);
 
     return ApiResponse.success(res, {
-        domains,
+        items: domains,
         pagination: {
             page,
             limit,

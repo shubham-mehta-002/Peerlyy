@@ -3,15 +3,17 @@ import { hashPassword } from "./hash.js";
 import { UserRole } from "../constants/userRoles.enum.js";
 import { AuthProvider } from "../constants/authProvider.enum.js";
 
-const ADMIN_EMAIL = "smehta_mca25@thapar.edu";
-const ADMIN_PASSWORD = "123!@#qweQWE";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@peerlyy.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "PeerlyyAdmin123!";
 
 export const seedAdminUser = async (): Promise<void> => {
     try {
-        // Check if any users exist in the database
-        const userCount = await prisma.user.count();
+        // Check if any ADMIN users exist in the database
+        const adminCount = await prisma.user.count({
+            where: { role: UserRole.ADMIN }
+        });
 
-        if (userCount === 0) {
+        if (adminCount === 0) {
             console.log("No users found. Creating default admin user...");
 
             // Check if the college domain exists for thapar.edu
@@ -67,10 +69,9 @@ export const seedAdminUser = async (): Promise<void> => {
 
             console.log(`✅ Default admin user created successfully!`);
             console.log(`   Email: ${ADMIN_EMAIL}`);
-            console.log(`   Password: ${ADMIN_PASSWORD}`);
             console.log(`   Role: ${adminUser.role}`);
         } else {
-            console.log(`Database already has ${userCount} user(s). Skipping admin seed.`);
+            console.log(`Database already has ${adminCount} admin user(s). Skipping admin seed.`);
         }
     } catch (error: any) {
         // Check if it's a missing table error (database not migrated)

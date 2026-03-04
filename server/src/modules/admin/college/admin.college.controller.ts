@@ -38,6 +38,9 @@ export const getCollegesByDomain = asyncHandler(async (req: Request, res: Respon
     const query = req.validatedQuery || req.query;
     const { email } = query as { email: string };
 
+    if (!email || !email.includes("@")) {
+        throw new AppError("Invalid email format", HTTP_STATUS.BAD_REQUEST);
+    }
     const domain = email.split("@")[1];
 
     const record = await prisma.collegeDomain.findUnique({

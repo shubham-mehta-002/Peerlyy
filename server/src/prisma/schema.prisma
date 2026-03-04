@@ -109,9 +109,9 @@ model User {
 model Post {
   id            String         @id @default(uuid())
   caption       String
-  mediaUrl      String
-  mediaFileId   String?        // ImageKit file ID for deletion
-  mediaType     MediaType
+  mediaUrl      String?
+  mediaFileId   String? // ImageKit file ID for deletion
+  mediaType     MediaType?
   visibility    PostVisibility @default(PUBLIC)
   isCollegeOnly Boolean        @default(false)
 
