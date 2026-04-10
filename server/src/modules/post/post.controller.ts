@@ -7,7 +7,7 @@ import { AppError } from "../../utils/AppError.js";
 import { uploadToImageKit, deleteFromImageKit } from "../../utils/imagekit.js";
 
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
-    const { caption, mediaUrl, mediaType, visibility, isCollegeOnly } = req.validatedBody || req.body;
+    const { caption, mediaUrl, mediaType, mediaFileId, visibility, isCollegeOnly } = req.validatedBody || req.body;
     const userId = req.user?.userId;
 
     if (!userId) {
@@ -18,12 +18,12 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
         where: { id: userId },
     });
 
-    // TODO: Add mediaFileId to schema after running migration
     const post = await prisma.post.create({
         data: {
             caption,
             mediaUrl,
             mediaType,
+            mediaFileId,
             visibility,
             isCollegeOnly,
             authorId: userId,
