@@ -42,6 +42,8 @@ export const resetPasswordSchema = z.object({
 }, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
+});export const onboardingFormSchema = z.object({
+    name: z.string().trim().min(2, "Name must be at least 2 characters").max(50),
+    username: z.string().trim().min(3, "Username must be at least 3 characters").max(30).regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+    collegeId: z.string().uuid("Please select a valid college"),
 });
-
-

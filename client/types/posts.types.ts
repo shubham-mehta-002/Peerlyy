@@ -32,6 +32,7 @@ export interface CreatePostRequest {
     mediaType?: "IMAGE" | "VIDEO";
     visibility: "PUBLIC" | "COLLEGE";
     isCollegeOnly: boolean;
+    mediaFileId?: string;
 }
 
 export interface PostFilters {
@@ -41,6 +42,7 @@ export interface PostFilters {
     sort?: string;
     collegeId?: string;
     visibility?: string;
+    feedType?: "global" | "college";
 }
 
 export type PostResponse = ApiResponse<Post>;

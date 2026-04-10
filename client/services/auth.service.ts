@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/types/common.types";
-import { AuthResponse, LoginRequest, RegisterInitRequest, RegisterCompleteRequest, User, ForgotPasswordRequest, ResetPasswordRequest, VerifyOtpResponse } from "@/types/auth.types";
+import { AuthResponse, LoginRequest, RegisterInitRequest, RegisterCompleteRequest, User, ForgotPasswordRequest, ResetPasswordRequest, VerifyOtpResponse, CompleteProfileRequest } from "@/types/auth.types";
 import { axiosInstance } from "@/config/axiosInstance";
 
 export const authService = {
@@ -19,6 +19,15 @@ export const authService = {
         const response = await axiosInstance.get<ApiResponse<User>>("/auth/me");
         return response.data;
     },
+    getOnboardingColleges: async () => {
+        const response = await axiosInstance.get<ApiResponse<Array<{ id: string, name: string, campus: string }>>>("/auth/colleges");
+        return response.data;
+    },
+    completeProfile: async (data: CompleteProfileRequest) => {
+
+        const response = await axiosInstance.post<ApiResponse<User>>("/auth/complete-profile", data);
+        return response.data;
+    },
     forgotPassword: async (data: ForgotPasswordRequest) => {
         const response = await axiosInstance.post<ApiResponse<null>>("/auth/forgot-password", data);
         return response.data;
@@ -32,3 +41,4 @@ export const authService = {
         return response.data;
     }
 }
+

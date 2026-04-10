@@ -12,6 +12,15 @@ export const useCurrentUser = () => {
     });
 };
 
+export const useOnboardingColleges = () => {
+    return useQuery({
+        queryKey: ["auth", "onboarding-colleges"],
+        queryFn: authService.getOnboardingColleges,
+        staleTime: Infinity, // These don't change often for a user's domain
+    });
+};
+
+
 export const useLoginMutation = () => {
     const queryClient = useQueryClient();
     return useMutation({
@@ -91,3 +100,18 @@ export const useResetPasswordMutation = () => {
         },
     });
 };
+
+export const useCompleteProfileMutation = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: authService.completeProfile,
+        onSuccess: (data) => {
+            queryClient.setQueryData(["auth", "me"], data);
+            toast.success("Profile completed successfully!");
+        },
+        onError: (error: AxiosError<ApiResponse<null>>) => {
+            toast.error(error.response?.data?.message || "Failed to complete profile");
+        },
+    });
+};
+

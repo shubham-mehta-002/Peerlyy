@@ -31,7 +31,7 @@ export const postsService = {
     uploadMedia: async (file: File) => {
         const formData = new FormData();
         formData.append("file", file);
-        const response = await axiosInstance.post<ApiResponse<{ url: string; mediaType: string }>>(
+        const response = await axiosInstance.post<ApiResponse<{ url: string; mediaType: string; fileId: string }>>(
             "/posts/upload",
             formData,
             {

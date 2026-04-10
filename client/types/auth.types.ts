@@ -1,13 +1,21 @@
 export interface User {
     id: string;
     email: string;
-    firstName?: string;
-    lastName?: string;
+    name?: string;
+    username?: string;
     role: string;
     isVerified: boolean;
+    isProfileComplete: boolean;
     collegeId?: string;
     createdAt: string;
 }
+
+export interface CompleteProfileRequest {
+    name: string;
+    username: string;
+    collegeId: string;
+}
+
 
 export interface AuthResponse {
     user: User;
