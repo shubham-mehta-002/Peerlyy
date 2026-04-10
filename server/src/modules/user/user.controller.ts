@@ -227,3 +227,33 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     return ApiResponse.success(res, null, "Logged out successfully", HTTP_STATUS.OK);
 });
 
+export const completeProfile = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+    if (!userId) {
+        throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const { name, username, collegeId } = req.body;
+
+    if (username) {
+        const existingUsername = await prisma.user.findUnique({
+            where: { username }
+        });
+        if (existingUsername && existingUsername.id !== userId) {
+            throw new AppError("Username is already taken", HTTP_STATUS.CONFLICT);
+        }
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            name,
+            username,
+            collegeId,
+            isProfileComplete: true
+        }
+    });
+
+    return ApiResponse.success(res, toUserResponse(updatedUser), "Profile completed successfully", HTTP_STATUS.OK);
+});
+

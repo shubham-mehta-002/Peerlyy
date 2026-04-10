@@ -48,8 +48,13 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
     const page = parseInt(query.page as string) || 1;
     const limit = parseInt(query.limit as string) || 20;
     const skip = (page - 1) * limit;
-    const { search, visibility, collegeId, sort } = query;
+    const { search, visibility, collegeId, sort, feedType } = query;
     const userId = req.user?.userId;
+
+    let userRecord;
+    if (userId) {
+        userRecord = await prisma.user.findUnique({ where: { id: userId } });
+    }
 
     const where: any = {};
     if (search) {
@@ -57,21 +62,34 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
             { caption: { contains: search as string, mode: "insensitive" } },
         ];
     }
-    if (visibility) {
-        where.visibility = visibility;
-    }
-    if (collegeId) {
-        where.collegeId = collegeId as string;
+
+    if (feedType === "college" && userRecord?.collegeId) {
+        where.collegeId = userRecord.collegeId;
+    } else if (feedType === "global") {
+        where.visibility = "PUBLIC";
+    } else {
+        // Fallback to original params if feedType is not explicitly provided
+        if (visibility) {
+            where.visibility = visibility;
+        }
+        if (collegeId) {
+            where.collegeId = collegeId as string;
+        }
     }
 
-    // Sorting: latest (default), oldest, most_upvoted
-    let orderBy: any = { createdAt: "desc" };
+    // Sorting: hot (default), latest, oldest, most_upvoted
+    let orderBy: any;
     if (sort === "most_upvoted") {
         orderBy = { score: "desc" };
     } else if (sort === "oldest") {
         orderBy = { createdAt: "asc" };
     } else if (sort === "latest") {
         orderBy = { createdAt: "desc" };
+    } else {
+        orderBy = [
+            { score: "desc" },
+            { createdAt: "desc" }
+        ];
     }
 
     const [posts, total] = await Promise.all([

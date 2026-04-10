@@ -48,3 +48,11 @@ export const refreshAccessTokenSchema = z.object({
         refreshToken: z.string().min(1, "Refresh token is required")
     })
 });
+
+export const completeProfileSchema = z.object({
+    body: z.object({
+        name: z.string().min(1, "Name is required"),
+        username: z.string().min(3, "Username must be at least 3 characters").max(30),
+        collegeId: z.string().uuid("Invalid collegeId")
+    })
+});

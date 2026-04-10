@@ -20,8 +20,18 @@ export type PostModel = runtime.Types.Result.DefaultSelection<Prisma.$PostPayloa
 
 export type AggregatePost = {
   _count: PostCountAggregateOutputType | null
+  _avg: PostAvgAggregateOutputType | null
+  _sum: PostSumAggregateOutputType | null
   _min: PostMinAggregateOutputType | null
   _max: PostMaxAggregateOutputType | null
+}
+
+export type PostAvgAggregateOutputType = {
+  score: number | null
+}
+
+export type PostSumAggregateOutputType = {
+  score: number | null
 }
 
 export type PostMinAggregateOutputType = {
@@ -32,6 +42,7 @@ export type PostMinAggregateOutputType = {
   mediaType: $Enums.MediaType | null
   visibility: $Enums.PostVisibility | null
   isCollegeOnly: boolean | null
+  score: number | null
   authorId: string | null
   collegeId: string | null
   createdAt: Date | null
@@ -46,6 +57,7 @@ export type PostMaxAggregateOutputType = {
   mediaType: $Enums.MediaType | null
   visibility: $Enums.PostVisibility | null
   isCollegeOnly: boolean | null
+  score: number | null
   authorId: string | null
   collegeId: string | null
   createdAt: Date | null
@@ -60,6 +72,7 @@ export type PostCountAggregateOutputType = {
   mediaType: number
   visibility: number
   isCollegeOnly: number
+  score: number
   authorId: number
   collegeId: number
   createdAt: number
@@ -67,6 +80,14 @@ export type PostCountAggregateOutputType = {
   _all: number
 }
 
+
+export type PostAvgAggregateInputType = {
+  score?: true
+}
+
+export type PostSumAggregateInputType = {
+  score?: true
+}
 
 export type PostMinAggregateInputType = {
   id?: true
@@ -76,6 +97,7 @@ export type PostMinAggregateInputType = {
   mediaType?: true
   visibility?: true
   isCollegeOnly?: true
+  score?: true
   authorId?: true
   collegeId?: true
   createdAt?: true
@@ -90,6 +112,7 @@ export type PostMaxAggregateInputType = {
   mediaType?: true
   visibility?: true
   isCollegeOnly?: true
+  score?: true
   authorId?: true
   collegeId?: true
   createdAt?: true
@@ -104,6 +127,7 @@ export type PostCountAggregateInputType = {
   mediaType?: true
   visibility?: true
   isCollegeOnly?: true
+  score?: true
   authorId?: true
   collegeId?: true
   createdAt?: true
@@ -149,6 +173,18 @@ export type PostAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: PostAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: PostSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: PostMinAggregateInputType
@@ -179,6 +215,8 @@ export type PostGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: PostCountAggregateInputType | true
+  _avg?: PostAvgAggregateInputType
+  _sum?: PostSumAggregateInputType
   _min?: PostMinAggregateInputType
   _max?: PostMaxAggregateInputType
 }
@@ -191,11 +229,14 @@ export type PostGroupByOutputType = {
   mediaType: $Enums.MediaType | null
   visibility: $Enums.PostVisibility
   isCollegeOnly: boolean
+  score: number
   authorId: string
   collegeId: string | null
   createdAt: Date
   updatedAt: Date
   _count: PostCountAggregateOutputType | null
+  _avg: PostAvgAggregateOutputType | null
+  _sum: PostSumAggregateOutputType | null
   _min: PostMinAggregateOutputType | null
   _max: PostMaxAggregateOutputType | null
 }
@@ -226,6 +267,7 @@ export type PostWhereInput = {
   mediaType?: Prisma.EnumMediaTypeNullableFilter<"Post"> | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFilter<"Post"> | boolean
+  score?: Prisma.IntFilter<"Post"> | number
   authorId?: Prisma.StringFilter<"Post"> | string
   collegeId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
@@ -244,6 +286,7 @@ export type PostOrderByWithRelationInput = {
   mediaType?: Prisma.SortOrderInput | Prisma.SortOrder
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
+  score?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -265,6 +308,7 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   mediaType?: Prisma.EnumMediaTypeNullableFilter<"Post"> | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFilter<"Post"> | boolean
+  score?: Prisma.IntFilter<"Post"> | number
   authorId?: Prisma.StringFilter<"Post"> | string
   collegeId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
@@ -283,13 +327,16 @@ export type PostOrderByWithAggregationInput = {
   mediaType?: Prisma.SortOrderInput | Prisma.SortOrder
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
+  score?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PostCountOrderByAggregateInput
+  _avg?: Prisma.PostAvgOrderByAggregateInput
   _max?: Prisma.PostMaxOrderByAggregateInput
   _min?: Prisma.PostMinOrderByAggregateInput
+  _sum?: Prisma.PostSumOrderByAggregateInput
 }
 
 export type PostScalarWhereWithAggregatesInput = {
@@ -303,6 +350,7 @@ export type PostScalarWhereWithAggregatesInput = {
   mediaType?: Prisma.EnumMediaTypeNullableWithAggregatesFilter<"Post"> | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityWithAggregatesFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
+  score?: Prisma.IntWithAggregatesFilter<"Post"> | number
   authorId?: Prisma.StringWithAggregatesFilter<"Post"> | string
   collegeId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
@@ -317,6 +365,7 @@ export type PostCreateInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -333,6 +382,7 @@ export type PostUncheckedCreateInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -349,6 +399,7 @@ export type PostUpdateInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -365,6 +416,7 @@ export type PostUncheckedUpdateInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,6 +433,7 @@ export type PostCreateManyInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -395,6 +448,7 @@ export type PostUpdateManyMutationInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -407,6 +461,7 @@ export type PostUncheckedUpdateManyInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -431,10 +486,15 @@ export type PostCountOrderByAggregateInput = {
   mediaType?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
+  score?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type PostAvgOrderByAggregateInput = {
+  score?: Prisma.SortOrder
 }
 
 export type PostMaxOrderByAggregateInput = {
@@ -445,6 +505,7 @@ export type PostMaxOrderByAggregateInput = {
   mediaType?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
+  score?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -459,10 +520,15 @@ export type PostMinOrderByAggregateInput = {
   mediaType?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
+  score?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type PostSumOrderByAggregateInput = {
+  score?: Prisma.SortOrder
 }
 
 export type PostScalarRelationFilter = {
@@ -562,6 +628,14 @@ export type EnumPostVisibilityFieldUpdateOperationsInput = {
   set?: $Enums.PostVisibility
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type PostCreateNestedOneWithoutVotesInput = {
   create?: Prisma.XOR<Prisma.PostCreateWithoutVotesInput, Prisma.PostUncheckedCreateWithoutVotesInput>
   connectOrCreate?: Prisma.PostCreateOrConnectWithoutVotesInput
@@ -598,6 +672,7 @@ export type PostCreateWithoutCollegeInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -613,6 +688,7 @@ export type PostUncheckedCreateWithoutCollegeInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -657,6 +733,7 @@ export type PostScalarWhereInput = {
   mediaType?: Prisma.EnumMediaTypeNullableFilter<"Post"> | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFilter<"Post"> | boolean
+  score?: Prisma.IntFilter<"Post"> | number
   authorId?: Prisma.StringFilter<"Post"> | string
   collegeId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
@@ -671,6 +748,7 @@ export type PostCreateWithoutAuthorInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   college?: Prisma.CollegeCreateNestedOneWithoutPostsInput
@@ -686,6 +764,7 @@ export type PostUncheckedCreateWithoutAuthorInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   collegeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -727,6 +806,7 @@ export type PostCreateWithoutVotesInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -742,6 +822,7 @@ export type PostUncheckedCreateWithoutVotesInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -773,6 +854,7 @@ export type PostUpdateWithoutVotesInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -788,6 +870,7 @@ export type PostUncheckedUpdateWithoutVotesInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -803,6 +886,7 @@ export type PostCreateWithoutCommentsInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -818,6 +902,7 @@ export type PostUncheckedCreateWithoutCommentsInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -849,6 +934,7 @@ export type PostUpdateWithoutCommentsInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -864,6 +950,7 @@ export type PostUncheckedUpdateWithoutCommentsInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -879,6 +966,7 @@ export type PostCreateManyCollegeInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -892,6 +980,7 @@ export type PostUpdateWithoutCollegeInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -907,6 +996,7 @@ export type PostUncheckedUpdateWithoutCollegeInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -922,6 +1012,7 @@ export type PostUncheckedUpdateManyWithoutCollegeInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -935,6 +1026,7 @@ export type PostCreateManyAuthorInput = {
   mediaType?: $Enums.MediaType | null
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
+  score?: number
   collegeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -948,6 +1040,7 @@ export type PostUpdateWithoutAuthorInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   college?: Prisma.CollegeUpdateOneWithoutPostsNestedInput
@@ -963,6 +1056,7 @@ export type PostUncheckedUpdateWithoutAuthorInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -978,6 +1072,7 @@ export type PostUncheckedUpdateManyWithoutAuthorInput = {
   mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  score?: Prisma.IntFieldUpdateOperationsInput | number
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1031,6 +1126,7 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   mediaType?: boolean
   visibility?: boolean
   isCollegeOnly?: boolean
+  score?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
@@ -1050,6 +1146,7 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   mediaType?: boolean
   visibility?: boolean
   isCollegeOnly?: boolean
+  score?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
@@ -1066,6 +1163,7 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   mediaType?: boolean
   visibility?: boolean
   isCollegeOnly?: boolean
+  score?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
@@ -1082,13 +1180,14 @@ export type PostSelectScalar = {
   mediaType?: boolean
   visibility?: boolean
   isCollegeOnly?: boolean
+  score?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "caption" | "mediaUrl" | "mediaFileId" | "mediaType" | "visibility" | "isCollegeOnly" | "authorId" | "collegeId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "caption" | "mediaUrl" | "mediaFileId" | "mediaType" | "visibility" | "isCollegeOnly" | "score" | "authorId" | "collegeId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   college?: boolean | Prisma.Post$collegeArgs<ExtArgs>
@@ -1121,6 +1220,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     mediaType: $Enums.MediaType | null
     visibility: $Enums.PostVisibility
     isCollegeOnly: boolean
+    score: number
     authorId: string
     collegeId: string | null
     createdAt: Date
@@ -1559,6 +1659,7 @@ export interface PostFieldRefs {
   readonly mediaType: Prisma.FieldRef<"Post", 'MediaType'>
   readonly visibility: Prisma.FieldRef<"Post", 'PostVisibility'>
   readonly isCollegeOnly: Prisma.FieldRef<"Post", 'Boolean'>
+  readonly score: Prisma.FieldRef<"Post", 'Int'>
   readonly authorId: Prisma.FieldRef<"Post", 'String'>
   readonly collegeId: Prisma.FieldRef<"Post", 'String'>
   readonly createdAt: Prisma.FieldRef<"Post", 'DateTime'>

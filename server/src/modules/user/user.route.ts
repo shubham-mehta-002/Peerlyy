@@ -14,5 +14,6 @@ router.post("/reset-password", validateRequest(validators.resetPasswordSchema), 
 router.post("/refresh-token", validateRequest(validators.refreshAccessTokenSchema), authControllers.refreshAccessToken)
 router.get("/me", authenticate, authControllers.me);
 router.post("/logout", authenticate, authControllers.logout);
+router.patch("/complete-profile", authenticate, validateRequest(validators.completeProfileSchema), authControllers.completeProfile);
 
 export default router;
