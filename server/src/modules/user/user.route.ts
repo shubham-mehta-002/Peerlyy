@@ -14,6 +14,7 @@ router.post("/reset-password", validateRequest(validators.resetPasswordSchema), 
 router.post("/refresh-token", validateRequest(validators.refreshAccessTokenSchema), authControllers.refreshAccessToken)
 router.get("/me", authenticate, authControllers.me);
 router.post("/logout", authenticate, authControllers.logout);
-router.patch("/complete-profile", authenticate, validateRequest(validators.completeProfileSchema), authControllers.completeProfile);
+router.post("/complete-profile", authenticate, validateRequest(validators.completeProfileSchema), authControllers.completeProfile);
+router.get("/colleges", authenticate, authControllers.getCollegesByDomain);
 
-export default router;
+export default router;

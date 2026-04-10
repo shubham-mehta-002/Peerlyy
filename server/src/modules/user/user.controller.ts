@@ -8,7 +8,8 @@ import { redis } from "../../config/redis.js";
 import { toUserResponse } from "./user.mapper.js";
 // Initiates the registration process by sending an OTP to the user's email.
 export const registerInit = asyncHandler(async (req: Request, res: Response) => {
-    const email = getNormalizedEmail(req.body.email);
+    const body = req.validatedBody || req.body;
+    const email = getNormalizedEmail(body.email);
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (user) {
@@ -47,8 +48,9 @@ export const registerInit = asyncHandler(async (req: Request, res: Response) => 
 
 // Completes the registration process by verifying the OTP and creating the user.
 export const registerComplete = asyncHandler(async (req: Request, res: Response) => {
-    const email = getNormalizedEmail(req.body.email);
-    const { otp, password } = req.body;
+    const body = req.validatedBody || req.body;
+    const email = getNormalizedEmail(body.email);
+    const { otp, password } = body;
 
     const key = `otp:register:${email}`;
     const storedOtp = await redis.get(key);
@@ -80,8 +82,9 @@ export const registerComplete = asyncHandler(async (req: Request, res: Response)
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-    const email = getNormalizedEmail(req.body.email);
-    const { password } = req.body;
+    const body = req.validatedBody || req.body;
+    const email = getNormalizedEmail(body.email);
+    const { password } = body;
 
     const user = await prisma.user.findUnique({ where: { email } });
 
@@ -114,7 +117,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
 
 export const requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
-    const email = getNormalizedEmail(req.body.email);
+    const body = req.validatedBody || req.body;
+    const email = getNormalizedEmail(body.email);
 
     const user = await prisma.user.findUnique({ where: { email } });
 
@@ -132,7 +136,8 @@ export const requestPasswordReset = asyncHandler(async (req: Request, res: Respo
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
-    const { token, newPassword } = req.body;
+    const body = req.validatedBody || req.body;
+    const { token, newPassword } = body;
     const hashedToken = hashToken(token);
     const key = `token:reset:${hashedToken}`;
     const userId = await redis.get(key);
@@ -233,7 +238,37 @@ export const completeProfile = asyncHandler(async (req: Request, res: Response) 
         throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
 
-    const { name, username, collegeId } = req.body;
+    const body = req.validatedBody || req.body;
+    const { name, username, collegeId } = body;
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true }
+    });
+
+    if (!user) {
+        throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const emailDomain = user.email.split('@')[1];
+
+    if (collegeId) {
+        const college = await prisma.college.findUnique({
+            where: { id: collegeId },
+            include: { domain: true }
+        });
+
+        if (!college) {
+            throw new AppError("Selected college not found", HTTP_STATUS.NOT_FOUND);
+        }
+
+        if (college.domain.domain.toLowerCase() !== emailDomain.toLowerCase()) {
+            throw new AppError(
+                `Your email domain (${emailDomain}) does not match this college's verified domain (${college.domain.domain}).`,
+                HTTP_STATUS.FORBIDDEN
+            );
+        }
+    }
 
     if (username) {
         const existingUsername = await prisma.user.findUnique({
@@ -254,6 +289,45 @@ export const completeProfile = asyncHandler(async (req: Request, res: Response) 
         }
     });
 
+
     return ApiResponse.success(res, toUserResponse(updatedUser), "Profile completed successfully", HTTP_STATUS.OK);
 });
+
+export const getCollegesByDomain = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+    if (!userId) {
+        throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true }
+    });
+
+    if (!user) {
+        throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const emailDomain = user.email.split('@')[1];
+
+    const colleges = await prisma.college.findMany({
+        where: {
+            domain: {
+                domain: {
+                    equals: emailDomain,
+                    mode: 'insensitive'
+                }
+            },
+            isActive: true
+        },
+        select: {
+            id: true,
+            name: true,
+            campus: true
+        }
+    });
+
+    return ApiResponse.success(res, colleges, "Colleges fetched successfully", HTTP_STATUS.OK);
+});
+
 
