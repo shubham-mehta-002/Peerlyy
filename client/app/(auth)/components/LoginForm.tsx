@@ -27,11 +27,17 @@ export const LoginForm = () => {
 
     const onSubmit = (data: z.infer<typeof loginFormSchema>) => {
         loginMutation.mutate({ email: data.email, password: data.password }, {
-            onSuccess: () => {
-                router.push("/")
+            onSuccess: (response) => {
+                const user = response.data.user;
+                if (!user.isProfileComplete) {
+                    router.push("/onboarding")
+                } else {
+                    router.push("/")
+                }
             }
         })
     }
+
 
     const form = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
