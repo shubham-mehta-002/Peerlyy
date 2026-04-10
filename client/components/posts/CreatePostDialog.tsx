@@ -64,11 +64,13 @@ export const CreatePostDialog = ({ onPostCreated }: { onPostCreated?: () => void
         try {
             let mediaUrl: string | undefined = undefined;
             let mediaType: "IMAGE" | "VIDEO" | undefined = undefined;
+            let mediaFileId: string | undefined = undefined;
 
             // 1. Upload media if selected
             if (selectedFile) {
                 const uploadData = await uploadMediaMutation.mutateAsync(selectedFile);
                 mediaUrl = uploadData.data.url;
+                mediaFileId = (uploadData.data as any).fileId;
                 mediaType = uploadData.data.mediaType as "IMAGE" | "VIDEO";
             }
 
@@ -77,6 +79,7 @@ export const CreatePostDialog = ({ onPostCreated }: { onPostCreated?: () => void
                 ...values,
                 ...(mediaUrl && { mediaUrl }),
                 ...(mediaType && { mediaType }),
+                ...(mediaFileId && { mediaFileId }),
             });
 
             setIsOpen(false);

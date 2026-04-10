@@ -9,7 +9,7 @@ import { PostFilters as PostFiltersType } from "@/types/posts.types";
 import { useCurrentUser } from "@/hooks/auth.hooks";
 
 export const PostList = () => {
-    const [filters, setFilters] = useState<PostFiltersType>({ sort: "latest" });
+    const [filters, setFilters] = useState<PostFiltersType>({ sort: "hot", feedType: "global" });
     const { data: userData } = useCurrentUser();
     const user = userData?.data;
     const {
