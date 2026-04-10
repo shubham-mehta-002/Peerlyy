@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/types/admin.types";
+import { ApiResponse } from "@/types/common.types";
 import { AuthResponse, LoginRequest, RegisterInitRequest, RegisterCompleteRequest, User, ForgotPasswordRequest, ResetPasswordRequest, VerifyOtpResponse } from "@/types/auth.types";
 import { axiosInstance } from "@/config/axiosInstance";
 

@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import {
     Dialog,
     DialogContent,
@@ -38,6 +39,7 @@ export function EditCollegeDialog({ isOpen, onOpenChange, college, onSubmit, isP
         defaultValues: {
             name: '',
             campus: '',
+            isActive: true,
         },
     });
 
@@ -46,6 +48,7 @@ export function EditCollegeDialog({ isOpen, onOpenChange, college, onSubmit, isP
             reset({
                 name: college.name,
                 campus: college.campus,
+                isActive: college.isActive,
             });
         }
     }, [college, reset]);
@@ -104,6 +107,25 @@ export function EditCollegeDialog({ isOpen, onOpenChange, college, onSubmit, isP
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
+                                </Field>
+                            )}
+                        />
+
+                        <Controller
+                            name="isActive"
+                            control={control}
+                            render={({ field }) => (
+                                <Field className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm border-border/50">
+                                    <div className="space-y-0.5">
+                                        <FieldLabel>Active Status</FieldLabel>
+                                        <p className="text-[0.7rem] text-muted-foreground">
+                                            Allow registrations from this campus.
+                                        </p>
+                                    </div>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
                                 </Field>
                             )}
                         />

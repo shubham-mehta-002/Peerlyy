@@ -18,8 +18,13 @@ export const adminService = {
         return response.data;
     },
 
-    updateCollege: async (id: string, data: { name?: string; campus?: string }) => {
+    updateCollege: async (id: string, data: { name?: string; campus?: string; isActive?: boolean }) => {
         const response = await axiosInstance.patch<ApiResponse<College>>(`/admin/college/${id}`, data);
+        return response.data;
+    },
+
+    toggleCollegeStatus: async (id: string) => {
+        const response = await axiosInstance.patch<ApiResponse<College>>(`/admin/college/${id}/toggle`);
         return response.data;
     },
 
@@ -30,24 +35,15 @@ export const adminService = {
 
     // Domain Operations
     getCollegeDomains: async (page = 1, limit = 10, search = "") => {
-        const response = await axiosInstance.get<ApiResponse<{ domains: CollegeDomain[]; pagination: any }>>(`/admin/college-domain`, {
+        const response = await axiosInstance.get<ApiResponse<PaginatedResponse<CollegeDomain>>>(`/admin/college-domain`, {
             params: { page, limit, search }
         });
 
-        // Normalize the response to match PaginatedResponse<CollegeDomain>
-        const data: ApiResponse<PaginatedResponse<CollegeDomain>> = {
-            ...response.data,
-            data: {
-                items: response.data.data.domains,
-                pagination: response.data.data.pagination
-            }
-        };
-
-        return data;
+        return response.data;
     },
 
-    createCollegeDomain: async (domain: string, isActive: boolean) => {
-        const response = await axiosInstance.post<ApiResponse<CollegeDomain>>(`/admin/college-domain`, { domain, isActive });
+    createCollegeDomain: async (domain: string, colleges: { name: string; campus: string }[]) => {
+        const response = await axiosInstance.post<ApiResponse<CollegeDomain>>(`/admin/college-domain`, { domain, colleges });
         return response.data;
     },
 

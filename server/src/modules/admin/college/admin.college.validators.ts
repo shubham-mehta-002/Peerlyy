@@ -26,9 +26,7 @@ export const createCollegeSchema = z.object({
 
 export const getCollegesByDomainSchema = z.object({
     query: z.object({
-        email: z
-            .string()
-            .email("Valid email required"),
+        email: z.email("Valid email required"),
     }),
 });
 
@@ -41,11 +39,17 @@ export const updateCollegeSchema = z.object({
     body: z.object({
         name: z.string().min(2).max(150).optional(),
         campus: z.string().min(2).max(150).optional(),
-        domainId: z.string().uuid("Invalid domainId").optional()
+        isActive: z.boolean().optional()
     }).refine(
         (data) => Object.keys(data).length > 0,
         { message: "At least one field must be provided" }
     ),
+});
+
+export const toggleCollegeStatusSchema = z.object({
+    params: z.object({
+        id: z.string().uuid("Invalid college ID")
+    })
 });
 
 export const deleteCollegeSchema = z.object({

@@ -309,10 +309,6 @@ export type CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CollegeDomainUpdateToOneWithWhereWithoutCollegesInput, Prisma.CollegeDomainUpdateWithoutCollegesInput>, Prisma.CollegeDomainUncheckedUpdateWithoutCollegesInput>
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type CollegeDomainCreateWithoutCollegesInput = {
   id?: string
   domain: string

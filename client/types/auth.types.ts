@@ -5,6 +5,7 @@ export interface User {
     lastName?: string;
     role: string;
     isVerified: boolean;
+    collegeId?: string;
     createdAt: string;
 }
 
@@ -21,7 +22,7 @@ export interface RegisterInitRequest {
 export interface RegisterCompleteRequest {
     email: string;
     otp: string;
-    password?: string;
+    password: string;
 }
 
 export interface LoginRequest {

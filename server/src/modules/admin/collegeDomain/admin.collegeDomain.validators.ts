@@ -10,6 +10,10 @@ export const createCollegeDomainSchema = z.object({
                 /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                 "Invalid domain format (example: abc.edu)"
             ),
+        colleges: z.array(z.object({
+            name: z.string().min(2, "College name must be at least 2 characters").max(150),
+            campus: z.string().min(2, "Campus name required").max(150),
+        })).min(1, "At least one college must be provided")
     }),
 });
 

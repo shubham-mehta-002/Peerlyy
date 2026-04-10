@@ -6,9 +6,6 @@ import { HTTP_STATUS } from "../../constants/index.js";
 import { generateAndUpdateTokensInDB, generateOtp, asyncHandler, getDomain, getNormalizedEmail, checkOtpAttempts, generateResetPasswordToken, ApiResponse, AppError, sendEmail, comparePassword, hashPassword, hashToken, verifyRefreshToken } from "../../utils/index.js";
 import { redis } from "../../config/redis.js";
 import { toUserResponse } from "./user.mapper.js";
-
-// const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
-
 // Initiates the registration process by sending an OTP to the user's email.
 export const registerInit = asyncHandler(async (req: Request, res: Response) => {
     const email = getNormalizedEmail(req.body.email);
@@ -82,7 +79,6 @@ export const registerComplete = asyncHandler(async (req: Request, res: Response)
     return ApiResponse.success(res, { user }, "User registered successfully", HTTP_STATUS.CREATED);
 });
 
-
 export const login = asyncHandler(async (req: Request, res: Response) => {
     const email = getNormalizedEmail(req.body.email);
     const { password } = req.body;
@@ -116,71 +112,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     }, "Logged in successfully", HTTP_STATUS.OK)
 });
 
-// export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
-//     const { idToken } = req.body;
-
-//     const ticket = await googleClient.verifyIdToken({
-//         idToken,
-//         audience: env.GOOGLE_CLIENT_ID,
-//     });
-
-//     const payload = ticket.getPayload();
-//     if (!payload?.email || !payload.email_verified)
-//         throw new AppError("Invalid Google token", 400);
-
-//     const email = payload.email.toLowerCase().trim();
-//     const googleId = payload.sub;
-
-//     const domain = getDomain(email);
-
-//     const isWhitelisted = await prisma.collegeDomain.findUnique({ where: { domain } });
-//     if (!isWhitelisted) throw new AppError("Email domain not supported", 400);
-
-//     let user = await prisma.user.findUnique({ where: { email } });
-
-//     if (!user) {
-//         const collegeDomain = await prisma.collegeDomain.findUnique({
-//             where: { domain },
-//             include: { colleges: true }
-//         });
-
-//         const collegeId = collegeDomain?.colleges?.[0]?.id ?? null;
-
-//         user = await prisma.user.create({
-//             data: {
-//                 email,
-//                 googleId,
-//                 isVerified: true,
-//                 collegeId
-//             }
-//         });
-//     } else if (!user.googleId) {
-//         await prisma.user.update({
-//             where: { id: user.id },
-//             data: { googleId }
-//         });
-//     }
-
-//     const accessToken =      const refreshToken = generateRefreshToken(user.id);
-
-//     await prisma.user.update({
-//         where: { id: user.id },
-//         data: { refreshToken }
-//     });
-
-//     res.cookie("refreshToken", refreshToken, {
-//         httpOnly: true,
-//         secure: process.env.NODE_ENV === "production",
-//         sameSite: "strict",
-//         maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
-
-//     res.json({
-//         success: true,
-//         accessToken,
-//         user: { id: user.id, email: user.email, role: user.role }
-//     });
-// });
 
 export const requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
     const email = getNormalizedEmail(req.body.email);

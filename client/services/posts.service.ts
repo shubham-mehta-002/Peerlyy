@@ -1,6 +1,6 @@
 import { axiosInstance } from "@/config/axiosInstance";
-import { Post, PostFilters, CreatePostRequest, PostsResponse, PostResponse } from "@/types/posts.types";
-import { ApiResponse } from "@/types/admin.types";
+import { Post, PostFilters, CreatePostRequest, PostsResponse, PostResponse, CommentsResponse } from "@/types/posts.types";
+import { ApiResponse } from "@/types/common.types";
 
 export const postsService = {
     getAllPosts: async (params: PostFilters) => {
@@ -38,6 +38,19 @@ export const postsService = {
                 headers: { "Content-Type": "multipart/form-data" },
             }
         );
+        return response.data;
+    },
+
+    getComments: async (postId: string, params: { page?: number; limit?: number }) => {
+        const response = await axiosInstance.get<CommentsResponse>(`/comments/${postId}`, { params });
+        return response.data;
+    },
+
+    addComment: async (postId: string, content: string, parentId?: string) => {
+        const response = await axiosInstance.post<ApiResponse<any>>(`/comments/${postId}`, {
+            content,
+            parentId,
+        });
         return response.data;
     },
 };

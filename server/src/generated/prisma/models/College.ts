@@ -28,6 +28,7 @@ export type CollegeMinAggregateOutputType = {
   id: string | null
   name: string | null
   campus: string | null
+  isActive: boolean | null
   domainId: string | null
   createdAt: Date | null
 }
@@ -36,6 +37,7 @@ export type CollegeMaxAggregateOutputType = {
   id: string | null
   name: string | null
   campus: string | null
+  isActive: boolean | null
   domainId: string | null
   createdAt: Date | null
 }
@@ -44,6 +46,7 @@ export type CollegeCountAggregateOutputType = {
   id: number
   name: number
   campus: number
+  isActive: number
   domainId: number
   createdAt: number
   _all: number
@@ -54,6 +57,7 @@ export type CollegeMinAggregateInputType = {
   id?: true
   name?: true
   campus?: true
+  isActive?: true
   domainId?: true
   createdAt?: true
 }
@@ -62,6 +66,7 @@ export type CollegeMaxAggregateInputType = {
   id?: true
   name?: true
   campus?: true
+  isActive?: true
   domainId?: true
   createdAt?: true
 }
@@ -70,6 +75,7 @@ export type CollegeCountAggregateInputType = {
   id?: true
   name?: true
   campus?: true
+  isActive?: true
   domainId?: true
   createdAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type CollegeGroupByOutputType = {
   id: string
   name: string
   campus: string
+  isActive: boolean
   domainId: string
   createdAt: Date
   _count: CollegeCountAggregateOutputType | null
@@ -180,6 +187,7 @@ export type CollegeWhereInput = {
   id?: Prisma.StringFilter<"College"> | string
   name?: Prisma.StringFilter<"College"> | string
   campus?: Prisma.StringFilter<"College"> | string
+  isActive?: Prisma.BoolFilter<"College"> | boolean
   domainId?: Prisma.StringFilter<"College"> | string
   createdAt?: Prisma.DateTimeFilter<"College"> | Date | string
   domain?: Prisma.XOR<Prisma.CollegeDomainScalarRelationFilter, Prisma.CollegeDomainWhereInput>
@@ -191,6 +199,7 @@ export type CollegeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   campus?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   domain?: Prisma.CollegeDomainOrderByWithRelationInput
@@ -205,6 +214,7 @@ export type CollegeWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CollegeWhereInput | Prisma.CollegeWhereInput[]
   name?: Prisma.StringFilter<"College"> | string
   campus?: Prisma.StringFilter<"College"> | string
+  isActive?: Prisma.BoolFilter<"College"> | boolean
   domainId?: Prisma.StringFilter<"College"> | string
   createdAt?: Prisma.DateTimeFilter<"College"> | Date | string
   domain?: Prisma.XOR<Prisma.CollegeDomainScalarRelationFilter, Prisma.CollegeDomainWhereInput>
@@ -216,6 +226,7 @@ export type CollegeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   campus?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CollegeCountOrderByAggregateInput
@@ -230,6 +241,7 @@ export type CollegeScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"College"> | string
   name?: Prisma.StringWithAggregatesFilter<"College"> | string
   campus?: Prisma.StringWithAggregatesFilter<"College"> | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"College"> | boolean
   domainId?: Prisma.StringWithAggregatesFilter<"College"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"College"> | Date | string
 }
@@ -238,6 +250,7 @@ export type CollegeCreateInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   createdAt?: Date | string
   domain: Prisma.CollegeDomainCreateNestedOneWithoutCollegesInput
   users?: Prisma.UserCreateNestedManyWithoutCollegeInput
@@ -248,6 +261,7 @@ export type CollegeUncheckedCreateInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   domainId: string
   createdAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCollegeInput
@@ -258,6 +272,7 @@ export type CollegeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   domain?: Prisma.CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput
   users?: Prisma.UserUpdateManyWithoutCollegeNestedInput
@@ -268,6 +283,7 @@ export type CollegeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutCollegeNestedInput
@@ -278,6 +294,7 @@ export type CollegeCreateManyInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   domainId: string
   createdAt?: Date | string
 }
@@ -286,6 +303,7 @@ export type CollegeUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -293,6 +311,7 @@ export type CollegeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -301,6 +320,7 @@ export type CollegeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   campus?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -309,6 +329,7 @@ export type CollegeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   campus?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -317,6 +338,7 @@ export type CollegeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   campus?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -338,6 +360,10 @@ export type CollegeNullableScalarRelationFilter = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -422,6 +448,7 @@ export type CollegeCreateWithoutDomainInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   createdAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutCollegeInput
   posts?: Prisma.PostCreateNestedManyWithoutCollegeInput
@@ -431,6 +458,7 @@ export type CollegeUncheckedCreateWithoutDomainInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   createdAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCollegeInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCollegeInput
@@ -469,6 +497,7 @@ export type CollegeScalarWhereInput = {
   id?: Prisma.StringFilter<"College"> | string
   name?: Prisma.StringFilter<"College"> | string
   campus?: Prisma.StringFilter<"College"> | string
+  isActive?: Prisma.BoolFilter<"College"> | boolean
   domainId?: Prisma.StringFilter<"College"> | string
   createdAt?: Prisma.DateTimeFilter<"College"> | Date | string
 }
@@ -477,6 +506,7 @@ export type CollegeCreateWithoutUsersInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   createdAt?: Date | string
   domain: Prisma.CollegeDomainCreateNestedOneWithoutCollegesInput
   posts?: Prisma.PostCreateNestedManyWithoutCollegeInput
@@ -486,6 +516,7 @@ export type CollegeUncheckedCreateWithoutUsersInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   domainId: string
   createdAt?: Date | string
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCollegeInput
@@ -511,6 +542,7 @@ export type CollegeUpdateWithoutUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   domain?: Prisma.CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput
   posts?: Prisma.PostUpdateManyWithoutCollegeNestedInput
@@ -520,6 +552,7 @@ export type CollegeUncheckedUpdateWithoutUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   posts?: Prisma.PostUncheckedUpdateManyWithoutCollegeNestedInput
@@ -529,6 +562,7 @@ export type CollegeCreateWithoutPostsInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   createdAt?: Date | string
   domain: Prisma.CollegeDomainCreateNestedOneWithoutCollegesInput
   users?: Prisma.UserCreateNestedManyWithoutCollegeInput
@@ -538,6 +572,7 @@ export type CollegeUncheckedCreateWithoutPostsInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   domainId: string
   createdAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCollegeInput
@@ -563,6 +598,7 @@ export type CollegeUpdateWithoutPostsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   domain?: Prisma.CollegeDomainUpdateOneRequiredWithoutCollegesNestedInput
   users?: Prisma.UserUpdateManyWithoutCollegeNestedInput
@@ -572,6 +608,7 @@ export type CollegeUncheckedUpdateWithoutPostsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutCollegeNestedInput
@@ -581,6 +618,7 @@ export type CollegeCreateManyDomainInput = {
   id?: string
   name: string
   campus: string
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -588,6 +626,7 @@ export type CollegeUpdateWithoutDomainInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutCollegeNestedInput
   posts?: Prisma.PostUpdateManyWithoutCollegeNestedInput
@@ -597,6 +636,7 @@ export type CollegeUncheckedUpdateWithoutDomainInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutCollegeNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCollegeNestedInput
@@ -606,6 +646,7 @@ export type CollegeUncheckedUpdateManyWithoutDomainInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   campus?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -653,6 +694,7 @@ export type CollegeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   name?: boolean
   campus?: boolean
+  isActive?: boolean
   domainId?: boolean
   createdAt?: boolean
   domain?: boolean | Prisma.CollegeDomainDefaultArgs<ExtArgs>
@@ -665,6 +707,7 @@ export type CollegeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   campus?: boolean
+  isActive?: boolean
   domainId?: boolean
   createdAt?: boolean
   domain?: boolean | Prisma.CollegeDomainDefaultArgs<ExtArgs>
@@ -674,6 +717,7 @@ export type CollegeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   campus?: boolean
+  isActive?: boolean
   domainId?: boolean
   createdAt?: boolean
   domain?: boolean | Prisma.CollegeDomainDefaultArgs<ExtArgs>
@@ -683,11 +727,12 @@ export type CollegeSelectScalar = {
   id?: boolean
   name?: boolean
   campus?: boolean
+  isActive?: boolean
   domainId?: boolean
   createdAt?: boolean
 }
 
-export type CollegeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "campus" | "domainId" | "createdAt", ExtArgs["result"]["college"]>
+export type CollegeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "campus" | "isActive" | "domainId" | "createdAt", ExtArgs["result"]["college"]>
 export type CollegeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   domain?: boolean | Prisma.CollegeDomainDefaultArgs<ExtArgs>
   users?: boolean | Prisma.College$usersArgs<ExtArgs>
@@ -712,6 +757,7 @@ export type $CollegePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: string
     name: string
     campus: string
+    isActive: boolean
     domainId: string
     createdAt: Date
   }, ExtArgs["result"]["college"]>
@@ -1143,6 +1189,7 @@ export interface CollegeFieldRefs {
   readonly id: Prisma.FieldRef<"College", 'String'>
   readonly name: Prisma.FieldRef<"College", 'String'>
   readonly campus: Prisma.FieldRef<"College", 'String'>
+  readonly isActive: Prisma.FieldRef<"College", 'Boolean'>
   readonly domainId: Prisma.FieldRef<"College", 'String'>
   readonly createdAt: Prisma.FieldRef<"College", 'DateTime'>
 }

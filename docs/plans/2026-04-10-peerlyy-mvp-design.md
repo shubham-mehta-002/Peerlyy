@@ -24,6 +24,7 @@ Peerlyy is a multi-tenant college-oriented chat/discussion forum. Students can f
 
 ## 4. Post Management (CRUD)
 - **Create**: Users can post text/media. Specify visibility (College-only vs. Global).
+- **Media Uploads**: Utilizes ImageKit for handling all image and video uploads.
 - **Update**: Only the original author can edit the post.
 - **Delete**: Only the original author (or an Admin via the admin portal) can delete the post.
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { envConfig } from "./envConfig";
+import { toast } from "sonner";
 
 export const axiosInstance = axios.create({
     baseURL: envConfig.API_URL,
@@ -26,8 +27,9 @@ axiosInstance.interceptors.response.use(
 
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
-                // If refresh fails, redirect to login or handle session expiry
-                // window.location.href = "/login"; // Optional: Force redirect
+                // Refresh failed — token is expired, force user back to login
+                toast.error("Session expired. Please login again.");
+                window.location.href = "/login";
                 return Promise.reject(refreshError);
             }
         }

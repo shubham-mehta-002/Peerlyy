@@ -10,12 +10,14 @@ export interface Author {
 export interface Post {
     id: string;
     caption: string;
-    mediaUrl: string;
-    mediaType: "IMAGE" | "VIDEO";
+    mediaUrl?: string;
+    mediaType?: "IMAGE" | "VIDEO";
     visibility: "PUBLIC" | "COLLEGE";
     authorId: string;
     author: Author;
     collegeId: string;
+    score: number;
+    userVote: "UPVOTE" | "DOWNVOTE" | null;
     createdAt: string;
     updatedAt: string;
     _count?: {
@@ -26,9 +28,9 @@ export interface Post {
 
 export interface CreatePostRequest {
     caption: string;
-    mediaUrl: string;
-    mediaType: string;
-    visibility: string;
+    mediaUrl?: string;
+    mediaType?: "IMAGE" | "VIDEO";
+    visibility: "PUBLIC" | "COLLEGE";
     isCollegeOnly: boolean;
 }
 
@@ -43,3 +45,22 @@ export interface PostFilters {
 
 export type PostResponse = ApiResponse<Post>;
 export type PostsResponse = ApiResponse<PaginatedResponse<Post>>;
+
+export interface Comment {
+    id: string;
+    content: string;
+    isAnonymous: boolean;
+    createdAt: string;
+    updatedAt: string;
+    author: {
+        id: string;
+        email: string;
+    } | null;
+    authorId: string;
+    postId: string;
+    parentId: string | null;
+    replies?: Comment[];
+}
+
+export type CommentResponse = ApiResponse<Comment>;
+export type CommentsResponse = ApiResponse<PaginatedResponse<Comment>>;

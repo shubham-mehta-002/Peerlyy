@@ -45,7 +45,13 @@ export const getCollegesByDomain = asyncHandler(async (req: Request, res: Respon
 
     const record = await prisma.collegeDomain.findUnique({
         where: { domain },
-        include: { colleges: true }
+        include: {
+            colleges: {
+                orderBy: {
+                    name: 'asc'
+                }
+            }
+        }
     });
 
     if (!record) {
@@ -81,7 +87,7 @@ export const getAllColleges = asyncHandler(async (req: Request, res: Response) =
                 domain: true
             },
             orderBy: {
-                createdAt: 'desc'
+                name: 'asc'
             }
         }),
         prisma.college.count({ where })
@@ -101,13 +107,36 @@ export const getAllColleges = asyncHandler(async (req: Request, res: Response) =
 export const updateCollege = asyncHandler(async (req: Request, res: Response) => {
     const params = req.validatedParams || req.params;
     const id = params.id as string;
+    const { name, campus, isActive } = req.validatedBody || req.body;
 
     const college = await prisma.college.update({
         where: { id },
-        data: req.validatedBody || req.body
+        data: { name, campus, isActive }
     });
 
     return ApiResponse.success(res, college, "College updated successfully", HTTP_STATUS.OK);
+});
+
+export const toggleCollegeStatus = asyncHandler(async (req: Request, res: Response) => {
+    const params = req.validatedParams || req.params;
+    const id = params.id as string;
+
+    const college = await prisma.college.findUnique({
+        where: { id }
+    });
+
+    if (!college) {
+        throw new AppError("College not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const updatedCollege = await prisma.college.update({
+        where: { id },
+        data: {
+            isActive: !college.isActive
+        }
+    });
+
+    return ApiResponse.success(res, updatedCollege, `College ${updatedCollege.isActive ? 'activated' : 'deactivated'} successfully`, HTTP_STATUS.OK);
 });
 
 export const deleteCollege = asyncHandler(async (req: Request, res: Response) => {
@@ -132,8 +161,12 @@ export const deleteCollege = asyncHandler(async (req: Request, res: Response) =>
     }
 
     if (college._count.users > 0 || college._count.posts > 0) {
+        const reasons = [];
+        if (college._count.users > 0) reasons.push(`${college._count.users} users`);
+        if (college._count.posts > 0) reasons.push(`${college._count.posts} posts`);
+
         throw new AppError(
-            `Cannot delete college with existing users (${college._count.users}) or posts (${college._count.posts})`,
+            `Cannot delete college because it has associated ${reasons.join(" and ")}. Please remove them first.`,
             HTTP_STATUS.BAD_REQUEST
         );
     }

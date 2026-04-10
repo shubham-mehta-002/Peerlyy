@@ -20,12 +20,6 @@ app.use(
     })
 );
 
-// TODO: Add express-rate-limit for production
-// npm install express-rate-limit
-// import rateLimit from 'express-rate-limit';
-// const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
-// const apiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
-
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

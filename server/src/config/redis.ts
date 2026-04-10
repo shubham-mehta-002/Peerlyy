@@ -1,10 +1,8 @@
 import { createClient } from "redis";
+import { env } from "./env.js";
 
 export const redis = createClient({
-    socket: {
-        host: "127.0.0.1",
-        port: 6379
-    }
+    url: env.REDIS_URL
 });
 
 redis.on("error", (err) => console.error("Redis Error", err));

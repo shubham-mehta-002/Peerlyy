@@ -1,11 +1,17 @@
 import { useInfinitePosts } from "@/hooks/posts.hooks";
 import { PostCard } from "./PostCard";
+import { PostFilters } from "./PostFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInView } from "react-intersection-observer";
 import { Loader2 } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { PostFilters as PostFiltersType } from "@/types/posts.types";
+import { useCurrentUser } from "@/hooks/auth.hooks";
 
 export const PostList = () => {
+    const [filters, setFilters] = useState<PostFiltersType>({ sort: "latest" });
+    const { data: userData } = useCurrentUser();
+    const user = userData?.data;
     const {
         data,
         fetchNextPage,
@@ -13,8 +19,8 @@ export const PostList = () => {
         isFetchingNextPage,
         status,
         refetch
-    } = useInfinitePosts();
-
+    } = useInfinitePosts(filters);
+    console.log({ data })
     const { ref, inView } = useInView();
 
     useEffect(() => {
@@ -58,6 +64,11 @@ export const PostList = () => {
 
     return (
         <div className="space-y-6 pb-20">
+            <PostFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+                userCollegeId={user?.collegeId}
+            />
             {posts.length > 0 ? (
                 <>
                     {posts.map((post) => (

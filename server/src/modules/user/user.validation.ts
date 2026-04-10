@@ -30,12 +30,6 @@ export const loginSchema = z.object({
     }),
 });
 
-// export const googleLoginSchema = z.object({
-//     body: z.object({
-//         idToken: z.string(),
-//     }),
-// });
-
 export const forgotPasswordSchema = z.object({
     body: z.object({
         email: z.string().email()

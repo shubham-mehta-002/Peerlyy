@@ -6,7 +6,7 @@ import { HTTP_STATUS } from "../../../constants/index.js";
 import { AppError } from "../../../utils/AppError.js";
 
 export const createCollegeDomain = asyncHandler(async (req: Request, res: Response) => {
-    const { domain } = req.validatedBody || req.body;
+    const { domain, colleges } = req.validatedBody || req.body;
 
     const exists = await prisma.collegeDomain.findUnique({
         where: { domain }
@@ -16,14 +16,27 @@ export const createCollegeDomain = asyncHandler(async (req: Request, res: Respon
         throw new AppError("Domain already exists", HTTP_STATUS.CONFLICT);
     }
 
-    const record = await prisma.collegeDomain.create({
-        data: {
-            domain,
-            isActive: true
-        }
+    const record = await prisma.$transaction(async (tx) => {
+        const domainRecord = await tx.collegeDomain.create({
+            data: {
+                domain,
+                isActive: true,
+                colleges: {
+                    create: colleges.map((c: any) => ({
+                        name: c.name,
+                        campus: c.campus,
+                        isActive: true
+                    }))
+                }
+            },
+            include: {
+                colleges: true
+            }
+        });
+        return domainRecord;
     });
 
-    return ApiResponse.success(res, record, "Domain created successfully", HTTP_STATUS.CREATED);
+    return ApiResponse.success(res, record, "Domain and colleges created successfully", HTTP_STATUS.CREATED);
 });
 
 export const getCollegeDomains = asyncHandler(async (req: Request, res: Response) => {
@@ -51,8 +64,13 @@ export const getCollegeDomains = asyncHandler(async (req: Request, res: Response
             include: {
                 colleges: {
                     select: {
+                        id: true,
                         name: true,
-                        campus: true
+                        campus: true,
+                        isActive: true
+                    },
+                    orderBy: {
+                        name: 'asc'
                     }
                 }
             },
@@ -86,14 +104,24 @@ export const toggleCollegeDomainStatus = asyncHandler(async (req: Request, res: 
         throw new AppError("Domain not found", HTTP_STATUS.NOT_FOUND);
     }
 
-    const updatedDomain = await prisma.collegeDomain.update({
-        where: { id },
-        data: {
-            isActive: !domain.isActive
-        }
+    const newStatus = !domain.isActive;
+
+    const updatedDomain = await prisma.$transaction(async (tx) => {
+        const updated = await tx.collegeDomain.update({
+            where: { id },
+            data: { isActive: newStatus }
+        });
+
+        // Sync all colleges with the domain status
+        await tx.college.updateMany({
+            where: { domainId: id },
+            data: { isActive: newStatus }
+        });
+
+        return updated;
     });
 
-    return ApiResponse.success(res, updatedDomain, `Domain ${updatedDomain.isActive ? 'activated' : 'deactivated'} successfully`, HTTP_STATUS.OK);
+    return ApiResponse.success(res, updatedDomain, `Domain and all its colleges ${updatedDomain.isActive ? 'activated' : 'deactivated'} successfully`, HTTP_STATUS.OK);
 });
 
 export const deleteCollegeDomain = asyncHandler(async (req: Request, res: Response) => {

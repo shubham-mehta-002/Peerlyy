@@ -5,6 +5,28 @@ import { ApiResponse } from "../../utils/ApiResponse.js";
 import { HTTP_STATUS } from "../../constants/index.js";
 import { AppError } from "../../utils/AppError.js";
 
+// Calculate score change based on vote operation
+const calculateScoreChange = (
+    operation: "add" | "remove" | "change",
+    newType?: "UPVOTE" | "DOWNVOTE",
+    oldType?: "UPVOTE" | "DOWNVOTE"
+): number => {
+    switch (operation) {
+        case "add":
+            return newType === "UPVOTE" ? 1 : -1;
+        case "remove":
+            return oldType === "UPVOTE" ? -1 : 1;
+        case "change":
+            // Changing from upvote to downvote: -1 - 1 = -2
+            // Changing from downvote to upvote: 1 - (-1) = 2
+            const oldValue = oldType === "UPVOTE" ? 1 : -1;
+            const newValue = newType === "UPVOTE" ? 1 : -1;
+            return newValue - oldValue;
+        default:
+            return 0;
+    }
+};
+
 export const toggleVote = asyncHandler(async (req: Request, res: Response) => {
     const params = req.validatedParams || req.params;
     const postId = params.postId as string;
@@ -24,31 +46,72 @@ export const toggleVote = asyncHandler(async (req: Request, res: Response) => {
         },
     });
 
+    let result;
+    let scoreChange = 0;
 
     if (existingVote) {
         if (existingVote.type === type) {
             // Remove vote if same type
-            await prisma.vote.delete({
-                where: { id: existingVote.id },
-            });
-            return ApiResponse.success(res, null, "Vote removed", HTTP_STATUS.OK);
+            scoreChange = calculateScoreChange("remove", undefined, existingVote.type);
+            await prisma.$transaction([
+                prisma.vote.delete({
+                    where: { id: existingVote.id },
+                }),
+                prisma.post.update({
+                    where: { id: postId },
+                    data: { score: { increment: scoreChange } },
+                })
+            ]);
+            result = { action: "removed", type: null };
         } else {
             // Update vote type
-            const updatedVote = await prisma.vote.update({
-                where: { id: existingVote.id },
-                data: { type },
-            });
-            return ApiResponse.success(res, updatedVote, "Vote updated", HTTP_STATUS.OK);
+            scoreChange = calculateScoreChange("change", type, existingVote.type);
+            await prisma.$transaction([
+                prisma.vote.update({
+                    where: { id: existingVote.id },
+                    data: { type },
+                }),
+                prisma.post.update({
+                    where: { id: postId },
+                    data: { score: { increment: scoreChange } },
+                })
+            ]);
+            result = { action: "changed", type };
         }
+    } else {
+        // Create new vote
+        scoreChange = calculateScoreChange("add", type);
+        await prisma.$transaction([
+            prisma.vote.create({
+                data: {
+                    type,
+                    userId,
+                    postId,
+                },
+            }),
+            prisma.post.update({
+                where: { id: postId },
+                data: { score: { increment: scoreChange } },
+            })
+        ]);
+        result = { action: "added", type };
     }
 
-    const newVote = await prisma.vote.create({
-        data: {
-            type,
-            userId,
-            postId,
-        },
+    // Get updated post score
+    const post = await prisma.post.findUnique({
+        where: { id: postId },
+        select: {
+            score: true,
+            _count: {
+                select: { votes: true }
+            }
+        }
     });
 
-    return ApiResponse.success(res, newVote, "Vote added", HTTP_STATUS.CREATED);
+    return ApiResponse.success(res, {
+        ...result,
+        postId,
+        score: post?.score ?? 0,
+        totalVotes: post?._count?.votes ?? 0,
+    }, "Vote updated successfully", HTTP_STATUS.OK);
 });

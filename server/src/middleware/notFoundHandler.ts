@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/index.js';
+import { HTTP_STATUS } from '../constants/httpStatusCodes.js';
 
 export const notFoundHandler = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): void => {
-  const error = new AppError(`Route ${req.originalUrl} not found`, 404);
+  const error = new AppError(`Route ${req.originalUrl} not found`, HTTP_STATUS.NOT_FOUND);
   next(error);
 };

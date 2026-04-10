@@ -54,9 +54,10 @@ enum AuthProvider {
 }
 
 model College {
-  id     String @id @default(uuid())
-  name   String
-  campus String
+  id       String  @id @default(uuid())
+  name     String
+  campus   String
+  isActive Boolean @default(true)
 
   domain   CollegeDomain @relation(fields: [domainId], references: [id])
   domainId String
@@ -114,6 +115,7 @@ model Post {
   mediaType     MediaType?
   visibility    PostVisibility @default(PUBLIC)
   isCollegeOnly Boolean        @default(false)
+  score         Int            @default(0)
 
   author   User   @relation(fields: [authorId], references: [id])
   authorId String

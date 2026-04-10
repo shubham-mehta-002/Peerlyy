@@ -15,7 +15,4 @@ router.post("/refresh-token", validateRequest(validators.refreshAccessTokenSchem
 router.get("/me", authenticate, authControllers.me);
 router.post("/logout", authenticate, authControllers.logout);
 
-// router.post("/google", validateRequest(validators.googleLoginSchema), authControllers.googleLogin);
-// router.post("/logout", authenticate, authControllers.logout);
-
 export default router;

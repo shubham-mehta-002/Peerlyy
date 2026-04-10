@@ -3,16 +3,7 @@ import { ZodObject, ZodRawShape, ZodError, ZodTypeAny } from "zod";
 import { AppError } from "../utils/AppError.js";
 import { HTTP_STATUS } from "../constants/httpStatusCodes.js";
 
-// Extend Express Request to include validated data
-declare global {
-    namespace Express {
-        interface Request {
-            validatedBody?: any;
-            validatedQuery?: any;
-            validatedParams?: any;
-        }
-    }
-}
+// Middleware to validate request data using Zod schema
 
 export const validateRequest = (schema: ZodObject<ZodRawShape> | ZodTypeAny) => {
     return async (req: Request, res: Response, next: NextFunction) => {

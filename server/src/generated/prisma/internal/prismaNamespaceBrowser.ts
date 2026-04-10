@@ -79,6 +79,7 @@ export const CollegeScalarFieldEnum = {
   id: 'id',
   name: 'name',
   campus: 'campus',
+  isActive: 'isActive',
   domainId: 'domainId',
   createdAt: 'createdAt'
 } as const

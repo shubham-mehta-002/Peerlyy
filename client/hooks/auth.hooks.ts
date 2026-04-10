@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authService } from "@/services/auth.service";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { ApiResponse } from "@/types/common.types";
 
 export const useCurrentUser = () => {
     return useQuery({
         queryKey: ["auth", "me"],
         queryFn: authService.me,
+        staleTime: 5 * 60 * 1000, // 5 minutes — avoid hammering /auth/me on every mount
     });
 };
 
@@ -21,8 +24,9 @@ export const useLoginMutation = () => {
                 data: data.data.user
             };
             queryClient.setQueryData(["auth", "me"], transformedData);
+            toast.success(data.message || "Login successful");
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError<ApiResponse<null>>) => {
             toast.error(error.response?.data?.message || "Login failed");
         },
     });
@@ -43,7 +47,10 @@ export const useLogoutMutation = () => {
 export const useSendRegisterOtpMutation = () => {
     return useMutation({
         mutationFn: authService.sendRegisterOtp,
-        onError: (error: any) => {
+        onSuccess: (data) => {
+            toast.success(data.message || "OTP Sent successfully!!");
+        },
+        onError: (error: AxiosError<ApiResponse<null>>) => {
             toast.error(error.response?.data?.message || "Failed to send OTP");
         },
     });
@@ -52,7 +59,10 @@ export const useSendRegisterOtpMutation = () => {
 export const useVerifyRegisterOtpMutation = () => {
     return useMutation({
         mutationFn: authService.verifyRegisterOtp,
-        onError: (error: any) => {
+        onSuccess: (data) => {
+            toast.success(data.message || "OTP Verified successfully!!");
+        },
+        onError: (error: AxiosError<ApiResponse<null>>) => {
             toast.error(error.response?.data?.message || "OTP verification failed");
         },
     });
@@ -64,7 +74,7 @@ export const useForgotPasswordMutation = () => {
         onSuccess: (data) => {
             toast.success(data.message || "Reset link sent to your email");
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError<ApiResponse<null>>) => {
             toast.error(error.response?.data?.message || "Failed to send reset link");
         },
     });
@@ -76,7 +86,7 @@ export const useResetPasswordMutation = () => {
         onSuccess: (data) => {
             toast.success(data.message || "Password reset successfully");
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError<ApiResponse<null>>) => {
             toast.error(error.response?.data?.message || "Failed to reset password");
         },
     });

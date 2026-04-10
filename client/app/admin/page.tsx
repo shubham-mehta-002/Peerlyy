@@ -1,105 +1,60 @@
 'use client';
 
 import { useState } from 'react';
-import { useColleges, useCreateCollege, useToggleDomainStatus, useDeleteCollege, useUpdateCollege } from '@/hooks/admin.hooks';
-import { useDebounce } from '@/hooks/use-debounce';
-import { ADMIN_COLLEGES_PAGE_LIMIT } from '@/constants/variables';
-import { Button } from '@/components/ui/button';
 import { AdminHeader } from './components/AdminHeader';
-import { AddCollegeDialog } from './components/AddCollegeDialog';
-import { EditCollegeDialog } from './components/EditCollegeDialog';
-import { DomainFilters } from './components/DomainFilters';
-import { CollegeTable } from './components/CollegeTable';
-import { College } from '@/types/admin.types';
+import { DomainManagement } from './components/DomainManagement';
+import { CollegeManagement } from './components/CollegeManagement';
+import { Globe, School } from 'lucide-react';
+
+type TabType = 'domains' | 'colleges';
 
 export default function AdminPage() {
-    const [page, setPage] = useState(1);
-    const [search, setSearch] = useState('');
-    const debouncedSearch = useDebounce(search, 500);
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [editingCollege, setEditingCollege] = useState<College | null>(null);
-
-    // Fetch Colleges
-    const { data, isLoading, isError } = useColleges(page, ADMIN_COLLEGES_PAGE_LIMIT, debouncedSearch);
-
-    // Mutations
-    const createMutation = useCreateCollege();
-    const toggleMutation = useToggleDomainStatus();
-    const deleteMutation = useDeleteCollege();
-    const editMutation = useUpdateCollege();
-
-    const handleAddCollege = (data: { name: string; campus: string; domain: string }) => {
-        createMutation.mutate(data, {
-            onSuccess: () => setIsAddModalOpen(false)
-        });
-    };
-
-    const handleEditCollege = (id: string, data: { name: string; campus: string }) => {
-        editMutation.mutate({ id, ...data }, {
-            onSuccess: () => setEditingCollege(null)
-        });
-    };
+    const [activeTab, setActiveTab] = useState<TabType>('domains');
 
     return (
-        <div className="container mx-auto py-10 px-4">
-            <AdminHeader onAddDomainClick={() => setIsAddModalOpen(true)} />
+        <div className="container mx-auto py-10 px-4 max-w-7xl animate-in fade-in duration-500">
+            <AdminHeader />
 
-            <AddCollegeDialog
-                isOpen={isAddModalOpen}
-                onOpenChange={setIsAddModalOpen}
-                onSubmit={handleAddCollege}
-                isPending={createMutation.isPending}
-            />
-
-            <EditCollegeDialog
-                isOpen={!!editingCollege}
-                onOpenChange={(open) => !open && setEditingCollege(null)}
-                college={editingCollege}
-                onSubmit={handleEditCollege}
-                isPending={editMutation.isPending}
-            />
-
-            <DomainFilters
-                search={search}
-                onSearchChange={(val) => {
-                    setSearch(val);
-                    setPage(1);
-                }}
-            />
-
-            <CollegeTable
-                data={data?.data.items}
-                isLoading={isLoading}
-                isError={isError}
-                onDelete={(id) => deleteMutation.mutate(id)}
-                onToggleStatus={(domainId) => toggleMutation.mutate(domainId)}
-                onEdit={(college) => setEditingCollege(college)}
-            />
-
-            {/* Pagination */}
-            {data?.data?.pagination && data.data.pagination.totalPages > 1 && (
-                <div className="flex items-center justify-end space-x-2 py-4">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
+            <div className="relative mb-12">
+                <div className="flex items-center gap-3 bg-muted/10 rounded-2xl border border-border/40 backdrop-blur-md w-fit p-2 mt-2">
+                    <button
+                        onClick={() => setActiveTab('domains')}
+                        className={`relative flex items-center gap-3 px-8 py-3.5 rounded-xl text-sm transition-all duration-300 z-10 ${activeTab === 'domains'
+                            ? 'text-white font-bold scale-[1.02]'
+                            : 'text-muted-foreground opacity-40 hover:opacity-100 font-medium'
+                            }`}
                     >
-                        Previous
-                    </Button>
-                    <div className="text-sm text-muted-foreground">
-                        Page {page} of {data.data.pagination.totalPages}
-                    </div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage(p => Math.min(data.data.pagination.totalPages, p + 1))}
-                        disabled={page === data.data.pagination.totalPages}
+                        {activeTab === 'domains' && (
+                            <div className="absolute inset-0 rounded-xl z-[-1] animate-in fade-in zoom-in-95 duration-200" />
+                        )}
+                        <Globe className={`h-4.5 w-4.5 transition-colors duration-300 ${activeTab === 'domains' ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <span className={activeTab === 'domains' ? 'text-primary' : 'text-muted-foreground'}>Domain Management</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab('colleges')}
+                        className={`relative flex items-center gap-3 px-8 py-3.5 rounded-xl text-sm transition-all duration-300 z-10 ${activeTab === 'colleges'
+                            ? 'text-white font-bold scale-[1.02]'
+                            : 'text-muted-foreground opacity-40 hover:opacity-100 font-medium'
+                            }`}
                     >
-                        Next
-                    </Button>
+                        {activeTab === 'colleges' && (
+                            <div className="absolute inset-0 rounded-xl z-[-1] animate-in fade-in zoom-in-95 duration-200" />
+                        )}
+                        <School className={`h-4.5 w-4.5 transition-colors duration-300 ${activeTab === 'colleges' ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <span className={activeTab === 'colleges' ? 'text-primary' : 'text-muted-foreground'}>College Directory</span>
+                    </button>
                 </div>
-            )}
+            </div>
+
+            {/* Content Area */}
+            <div className="animate-in slide-in-from-bottom-2 duration-300">
+                {activeTab === 'domains' ? (
+                    <DomainManagement />
+                ) : (
+                    <CollegeManagement />
+                )}
+            </div>
         </div>
     );
 }

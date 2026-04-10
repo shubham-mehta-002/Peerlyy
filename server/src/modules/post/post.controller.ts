@@ -49,6 +49,7 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
     const limit = parseInt(query.limit as string) || 20;
     const skip = (page - 1) * limit;
     const { search, visibility, collegeId, sort } = query;
+    const userId = req.user?.userId;
 
     const where: any = {};
     if (search) {
@@ -63,11 +64,14 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
         where.collegeId = collegeId as string;
     }
 
+    // Sorting: latest (default), oldest, most_upvoted
     let orderBy: any = { createdAt: "desc" };
-    if (sort === "trending") {
-        orderBy = { votes: { _count: "desc" } };
+    if (sort === "most_upvoted") {
+        orderBy = { score: "desc" };
     } else if (sort === "oldest") {
         orderBy = { createdAt: "asc" };
+    } else if (sort === "latest") {
+        orderBy = { createdAt: "desc" };
     }
 
     const [posts, total] = await Promise.all([
@@ -88,15 +92,27 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
                         votes: true,
                         comments: true,
                     }
-                }
+                },
+                // Include user's vote if logged in
+                votes: userId ? {
+                    where: { userId },
+                    select: { type: true }
+                } : false,
             },
             orderBy,
         }),
         prisma.post.count({ where }),
     ]);
 
+    // Transform posts to include userVote field and ensure score exists
+    const transformedPosts = posts.map(post => ({
+        ...post,
+        userVote: post.votes?.[0]?.type || null,
+        votes: undefined, // Remove votes array from response
+    }));
+
     return ApiResponse.success(res, {
-        items: posts,
+        items: transformedPosts,
         pagination: {
             page,
             limit,
@@ -110,6 +126,7 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
 export const getPostById = asyncHandler(async (req: Request, res: Response) => {
     const params = req.validatedParams || req.params;
     const id = params.id as string;
+    const userId = req.user?.userId;
 
     const post = await prisma.post.findUnique({
         where: { id },
@@ -120,18 +137,17 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
                     email: true,
                 }
             },
-            votes: true,
-            comments: {
-                include: {
-                    author: {
-                        select: {
-                            id: true,
-                            email: true,
-                        }
-                    },
-                    replies: true,
+            college: true,
+            _count: {
+                select: {
+                    votes: true,
+                    comments: true,
                 }
-            }
+            },
+            votes: userId ? {
+                where: { userId },
+                select: { type: true }
+            } : false,
         }
     });
 
@@ -139,7 +155,13 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
         throw new AppError("Post not found", HTTP_STATUS.NOT_FOUND);
     }
 
-    return ApiResponse.success(res, post, "Post fetched successfully", HTTP_STATUS.OK);
+    const transformedPost = {
+        ...post,
+        userVote: post.votes?.[0]?.type || null,
+        votes: undefined,
+    };
+
+    return ApiResponse.success(res, transformedPost, "Post fetched successfully", HTTP_STATUS.OK);
 });
 
 export const uploadMedia = asyncHandler(async (req: Request, res: Response) => {
@@ -177,18 +199,21 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
         throw new AppError("Forbidden", HTTP_STATUS.FORBIDDEN);
     }
 
-    // TODO: Delete media from ImageKit if fileId exists (after schema migration)
-    // if (post.mediaFileId) {
-    //     try {
-    //         await deleteFromImageKit(post.mediaFileId);
-    //     } catch (error) {
-    //         console.error("Failed to delete media from ImageKit:", error);
-    //     }
-    // }
+    // Delete media from ImageKit if fileId exists
+    if (post.mediaFileId) {
+        try {
+            await deleteFromImageKit(post.mediaFileId);
+        } catch (error) {
+            console.error("Failed to delete media from ImageKit:", error);
+        }
+    }
 
-    await prisma.post.delete({
-        where: { id },
-    });
+    // Delete related records first to avoid FK constraint errors
+    await prisma.$transaction([
+        prisma.comment.deleteMany({ where: { postId: id } }),
+        prisma.vote.deleteMany({ where: { postId: id } }),
+        prisma.post.delete({ where: { id } }),
+    ]);
 
     return ApiResponse.success(res, null, "Post deleted successfully", HTTP_STATUS.OK);
 });

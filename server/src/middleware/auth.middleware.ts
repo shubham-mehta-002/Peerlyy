@@ -7,9 +7,7 @@ import { HTTP_STATUS } from "../constants/httpStatusCodes.js";
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log({ header: req.headers, cookies: req.cookies })
         const authHeader = req.headers.authorization;
-        console.log({ authHeader })
         let token;
 
         if (authHeader && authHeader.startsWith("Bearer ")) {

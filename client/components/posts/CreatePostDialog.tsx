@@ -48,32 +48,35 @@ export const CreatePostDialog = ({ onPostCreated }: { onPostCreated?: () => void
         const file = e.target.files?.[0];
         if (file) {
             setSelectedFile(file);
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
             const url = URL.createObjectURL(file);
             setPreviewUrl(url);
         }
     };
 
     const clearFile = () => {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
         setSelectedFile(null);
         setPreviewUrl(null);
     };
 
     const onSubmit = async (values: FormValues) => {
-        if (!selectedFile) {
-            toast.error("Please select an image or video");
-            return;
-        }
-
         try {
-            // 1. Upload media
-            const uploadData = await uploadMediaMutation.mutateAsync(selectedFile);
-            const { url, mediaType } = uploadData.data;
+            let mediaUrl: string | undefined = undefined;
+            let mediaType: "IMAGE" | "VIDEO" | undefined = undefined;
+
+            // 1. Upload media if selected
+            if (selectedFile) {
+                const uploadData = await uploadMediaMutation.mutateAsync(selectedFile);
+                mediaUrl = uploadData.data.url;
+                mediaType = uploadData.data.mediaType as "IMAGE" | "VIDEO";
+            }
 
             // 2. Create post
             await createPostMutation.mutateAsync({
                 ...values,
-                mediaUrl: url,
-                mediaType,
+                ...(mediaUrl && { mediaUrl }),
+                ...(mediaType && { mediaType }),
             });
 
             setIsOpen(false);

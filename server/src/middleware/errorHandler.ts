@@ -11,7 +11,7 @@ export const errorHandler = (
     res: Response,
     _next: NextFunction
 ): void => {
-    let statusCode = 500;
+    let statusCode = HTTP_STATUS.INTERNAL_SERVER_ERROR;
     let message = 'Internal Server Error';
     let errors: any[] = [];
 
