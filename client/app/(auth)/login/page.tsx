@@ -1,7 +1,5 @@
 'use client'
 
-import * as z from "zod"
-import { loginFormSchema } from "../validators/auth.validator"
 import { Card } from "@/components/ui/card"
 import { FormHeader, LoginForm } from "../components"
 

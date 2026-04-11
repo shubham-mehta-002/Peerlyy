@@ -104,7 +104,7 @@ export const LoginForm = () => {
                             )}
                         />
 
-                        <Button disabled={loginMutation.isPending} className="py-3 cursor-pointer"><p className="text-sm text-shadow-muted-foreground">{loginMutation.isPending ? "Logging in..." : "Login"}</p></Button>
+                        <Button type="submit" disabled={loginMutation.isPending} className="py-3 cursor-pointer"><p className="text-sm text-shadow-muted-foreground">{loginMutation.isPending ? "Logging in..." : "Login"}</p></Button>
 
                         {/* <div className="relative">
                             <div className="absolute inset-0 flex items-center">
