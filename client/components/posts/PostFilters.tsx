@@ -9,29 +9,37 @@ import {
 } from "@/components/ui/select";
 import { PostFilters as PostFiltersType } from "@/types/posts.types";
 import { Filter, ArrowUpDown, GraduationCap, Globe, Clock, TrendingUp, Calendar, Flame } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface PostFiltersProps {
-    filters: PostFiltersType;
-    onFiltersChange: (filters: PostFiltersType) => void;
     userCollegeId?: string;
 }
 
-export const PostFilters = ({ filters, onFiltersChange, userCollegeId }: PostFiltersProps) => {
+export const PostFilters = ({ userCollegeId }: PostFiltersProps) => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const feedType = searchParams.get("feed") || "global";
+    const sortBy = searchParams.get("sort") || "hot";
+
+    const updateParams = (newParams: Record<string, string | null>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        Object.entries(newParams).forEach(([key, value]) => {
+            if (value === null) {
+                params.delete(key);
+            } else {
+                params.set(key, value);
+            }
+        });
+        router.push(`/?${params.toString()}`);
+    };
+
     const handleSortChange = (value: string) => {
-        onFiltersChange({ ...filters, sort: value });
+        updateParams({ sort: value });
     };
 
     const handleVisibilityChange = (value: string) => {
-        const { visibility, collegeId, ...rest } = filters;
-        if (value === "global") {
-            onFiltersChange({ ...rest, feedType: "global" });
-        } else if (value === "college") {
-            onFiltersChange({ ...rest, feedType: "college" });
-        }
-    };
-
-    const getCurrentVisibility = () => {
-        return filters.feedType || "global";
+        updateParams({ feed: value });
     };
 
     return (
@@ -40,7 +48,7 @@ export const PostFilters = ({ filters, onFiltersChange, userCollegeId }: PostFil
             <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select
-                    value={getCurrentVisibility()}
+                    value={feedType}
                     onValueChange={handleVisibilityChange}
                 >
                     <SelectTrigger className="w-[160px] bg-background/50 border-border/30">
@@ -50,7 +58,7 @@ export const PostFilters = ({ filters, onFiltersChange, userCollegeId }: PostFil
                         <SelectItem value="global">
                             <div className="flex items-center gap-2">
                                 <Globe className="h-4 w-4" />
-                                All Posts
+                                Public Feed
                             </div>
                         </SelectItem>
                         <SelectItem value="college" disabled={!userCollegeId}>
@@ -67,7 +75,7 @@ export const PostFilters = ({ filters, onFiltersChange, userCollegeId }: PostFil
             <div className="flex items-center gap-2">
                 <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
                 <Select
-                    value={filters.sort || "hot"}
+                    value={sortBy}
                     onValueChange={handleSortChange}
                 >
                     <SelectTrigger className="w-[160px] bg-background/50 border-border/30">

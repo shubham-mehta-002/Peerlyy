@@ -55,19 +55,19 @@ export const PostCard = ({ post }: PostCardProps) => {
                     <div className="flex items-center space-x-3">
                         <Avatar className="h-10 w-10 border border-border/50 shadow-sm">
                             <AvatarFallback className="bg-linear-to-br from-primary to-primary/70 text-primary-foreground font-bold">
-                                {post.author.email[0].toUpperCase()}
+                                {post.isAnonymous ? "A" : (post.author.username?.[0] || post.author.email[0]).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
 
                         <div>
                             <div className="flex items-center space-x-2">
                                 <span className="font-bold text-foreground/90 tracking-tight">
-                                    {post.author.email.split("@")[0]}
+                                    {post.isAnonymous ? "Anonymous Student" : `@${post.author.username || post.author.email.split("@")[0]}`}
                                 </span>
                                 {post.visibility === "COLLEGE" ? (
                                     <Badge variant="secondary" className="px-1.5 h-4.5 text-[10px] bg-primary/10 text-primary border-primary/20 font-bold uppercase tracking-wider">
                                         <Building2 className="h-2.5 w-2.5 mr-1" />
-                                        College
+                                        {post.college?.name || "College"}
                                     </Badge>
                                 ) : (
                                     <Badge variant="secondary" className="px-1.5 h-4.5 text-[10px] bg-secondary text-muted-foreground border-border/50 font-bold uppercase tracking-wider">

@@ -7,7 +7,7 @@ import { AppError } from "../../utils/AppError.js";
 import { uploadToImageKit, deleteFromImageKit } from "../../utils/imagekit.js";
 
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
-    const { caption, mediaUrl, mediaType, mediaFileId, visibility, isCollegeOnly } = req.validatedBody || req.body;
+    const { caption, mediaUrl, mediaType, mediaFileId, visibility, isCollegeOnly, isAnonymous } = req.validatedBody || req.body;
     const userId = req.user?.userId;
 
     if (!userId) {
@@ -26,6 +26,7 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
             mediaFileId,
             visibility,
             isCollegeOnly,
+            isAnonymous,
             authorId: userId,
             collegeId: user?.collegeId,
         },
@@ -33,7 +34,7 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
             author: {
                 select: {
                     id: true,
-                    email: true,
+                    username: true,
                 }
             },
             college: true
@@ -56,26 +57,38 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
         userRecord = await prisma.user.findUnique({ where: { id: userId } });
     }
 
-    const where: any = {};
+    const conditions: any[] = [];
+
+    // Search Logic: Keep search separate so it doesn't conflict with visibility filters
     if (search) {
-        where.OR = [
-            { caption: { contains: search as string, mode: "insensitive" } },
-        ];
+        conditions.push({
+            OR: [
+                { caption: { contains: search as string, mode: "insensitive" } },
+            ],
+        });
     }
 
+    // Feed / Visibility Logic
     if (feedType === "college" && userRecord?.collegeId) {
-        where.collegeId = userRecord.collegeId;
+        conditions.push({ collegeId: userRecord.collegeId });
     } else if (feedType === "global") {
-        where.visibility = "PUBLIC";
+        // "Public Feed" should not show posts marked as college-only
+        conditions.push({ isCollegeOnly: false });
     } else {
-        // Fallback to original params if feedType is not explicitly provided
+        // Legacy/Direct filters
         if (visibility) {
-            where.visibility = visibility;
+            conditions.push({ visibility });
         }
         if (collegeId) {
-            where.collegeId = collegeId as string;
+            conditions.push({ collegeId: collegeId as string });
         }
     }
+
+    const where = conditions.length > 0 ? { AND: conditions } : {};
+
+    // Diagnostic logging for debugging feed issues
+    console.log(`[getAllPosts] userId: ${userId}, collegeId: ${userRecord?.collegeId}, feedType: ${feedType}, conditions count: ${conditions.length}`);
+    console.log(`[getAllPosts] where clause:`, JSON.stringify(where, null, 2));
 
     // Sorting: hot (default), latest, oldest, most_upvoted
     let orderBy: any;
@@ -92,31 +105,36 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
         ];
     }
 
+    const includeObj: any = {
+        author: {
+            select: {
+                id: true,
+                username: true,
+            }
+        },
+        college: true,
+        _count: {
+            select: {
+                votes: true,
+                comments: true,
+            }
+        }
+    };
+
+    // Include user's vote if logged in
+    if (userId) {
+        includeObj.votes = {
+            where: { userId },
+            select: { type: true }
+        };
+    }
+
     const [posts, total] = await Promise.all([
         prisma.post.findMany({
             where,
             skip,
             take: limit,
-            include: {
-                author: {
-                    select: {
-                        id: true,
-                        email: true,
-                    }
-                },
-                college: true,
-                _count: {
-                    select: {
-                        votes: true,
-                        comments: true,
-                    }
-                },
-                // Include user's vote if logged in
-                votes: userId ? {
-                    where: { userId },
-                    select: { type: true }
-                } : false,
-            },
+            include: includeObj,
             orderBy,
         }),
         prisma.post.count({ where }),
@@ -125,7 +143,7 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
     // Transform posts to include userVote field and ensure score exists
     const transformedPosts = posts.map(post => ({
         ...post,
-        userVote: post.votes?.[0]?.type || null,
+        userVote: (post as any).votes?.[0]?.type || null,
         votes: undefined, // Remove votes array from response
     }));
 
@@ -152,7 +170,7 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
             author: {
                 select: {
                     id: true,
-                    email: true,
+                    username: true,
                 }
             },
             college: true,

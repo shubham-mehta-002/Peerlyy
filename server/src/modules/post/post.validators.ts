@@ -8,6 +8,7 @@ export const createPostSchema = z.object({
         mediaFileId: z.string().optional(),
         visibility: z.enum(["PUBLIC", "COLLEGE"]),
         isCollegeOnly: z.boolean(),
+        isAnonymous: z.boolean().optional().default(false),
     }),
 });
 
@@ -19,7 +20,8 @@ export const getPostsSchema = z.object({
         collegeId: z.string().optional(),
         feedType: z.enum(["global", "college"]).optional(),
         search: z.string().optional(),
-        sort: z.enum(["most_upvoted", "oldest", "latest"]).optional(),
+        sort: z.enum(["hot", "most_upvoted", "oldest", "latest"]).optional(),
+
     }),
 });
 

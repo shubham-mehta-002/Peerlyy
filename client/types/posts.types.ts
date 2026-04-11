@@ -2,9 +2,16 @@ import { ApiResponse, PaginatedResponse } from "./common.types";
 
 export interface Author {
     id: string;
+    username?: string;
     email: string;
     firstName?: string;
     lastName?: string;
+}
+
+export interface College {
+    id: string;
+    name: string;
+    campus: string;
 }
 
 export interface Post {
@@ -13,9 +20,11 @@ export interface Post {
     mediaUrl?: string;
     mediaType?: "IMAGE" | "VIDEO";
     visibility: "PUBLIC" | "COLLEGE";
+    isAnonymous: boolean;
     authorId: string;
     author: Author;
     collegeId: string;
+    college?: College;
     score: number;
     userVote: "UPVOTE" | "DOWNVOTE" | null;
     createdAt: string;
@@ -32,6 +41,7 @@ export interface CreatePostRequest {
     mediaType?: "IMAGE" | "VIDEO";
     visibility: "PUBLIC" | "COLLEGE";
     isCollegeOnly: boolean;
+    isAnonymous: boolean;
     mediaFileId?: string;
 }
 

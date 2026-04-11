@@ -23,6 +23,7 @@ const formSchema = z.object({
     caption: z.string().min(1, "Caption is required"),
     visibility: z.enum(["PUBLIC", "COLLEGE"]),
     isCollegeOnly: z.boolean(),
+    isAnonymous: z.boolean(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -41,6 +42,7 @@ export const CreatePostDialog = ({ onPostCreated }: { onPostCreated?: () => void
             caption: "",
             visibility: "PUBLIC",
             isCollegeOnly: false,
+            isAnonymous: false,
         },
     });
 
@@ -176,22 +178,36 @@ export const CreatePostDialog = ({ onPostCreated }: { onPostCreated?: () => void
                         />
                     </div>
 
-                    <Button
-                        type="submit"
-                        className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/10 font-bold transition-all rounded-xl"
-                        disabled={isPending}
-                    >
-                        {isPending ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                {uploadMediaMutation.isPending ? "Uploading Media..." : "Posting..."}
-                            </>
-                        ) : (
-                            "Share Post"
-                        )}
-                    </Button>
-                </form>
-            </DialogContent>
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-secondary/20 border border-border/30">
+                    <div className="space-y-0.5">
+                        <Label htmlFor="isAnonymous" className="text-sm font-bold text-foreground/90">Post Anonymously</Label>
+                        <p className="text-xs text-muted-foreground">Your identity will be hidden from other students</p>
+                    </div>
+                    <Switch
+                        id="isAnonymous"
+                        checked={form.watch("isAnonymous")}
+                        onCheckedChange={(checked) => {
+                            form.setValue("isAnonymous", checked);
+                        }}
+                    />
+                </div>
+
+                <Button
+                    type="submit"
+                    className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/10 font-bold transition-all rounded-xl"
+                    disabled={isPending}
+                >
+                    {isPending ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {uploadMediaMutation.isPending ? "Uploading Media..." : "Posting..."}
+                        </>
+                    ) : (
+                        "Share Post"
+                    )}
+                </Button>
+            </form>
+        </DialogContent>
         </Dialog>
     );
 };
