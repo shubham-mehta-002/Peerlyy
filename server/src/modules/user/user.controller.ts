@@ -98,15 +98,15 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS * 1000,
     });
 
@@ -181,15 +181,15 @@ export const refreshAccessToken = asyncHandler(async (req: Request, res: Respons
 
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: env.ACCESS_TOKEN_EXPIRY_SECONDS * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: env.REFRESH_TOKEN_EXPIRY_SECONDS * 1000,
     });
 

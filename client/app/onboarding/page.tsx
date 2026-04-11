@@ -32,28 +32,23 @@ export default function OnboardingPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background">
-            <div className="w-full max-w-[450px] space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <div className="mx-5 flex flex-col items-center justify-center min-h-screen">
+            <Card className="w-full sm:max-w-md">
                 <FormHeader
-                    description="Let's set up your profile to connect with your campus."
+                    description="Final Step: Complete your profile"
+                    subDescription={
+                        <p>
+                            Join <span className="text-primary font-semibold">{user?.email.split('@')[1]}</span>'s exclusive community.
+                        </p>
+                    }
                 />
+                <OnboardingForm />
+            </Card>
 
-                <Card className="border-none shadow-2xl bg-card/60 backdrop-blur-xl ring-1 ring-white/10 overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
-                    <CardHeader className="space-y-1 pb-2">
-                        <CardTitle className="text-2xl font-bold tracking-tight">Final Step</CardTitle>
-                        <CardDescription>
-                            Complete your profile to join {user?.email.split('@')[1]}'s exclusive community.
-                        </CardDescription>
-                    </CardHeader>
-
-                    <OnboardingForm />
-                </Card>
-
-                <p className="text-center text-xs text-muted-foreground px-8">
-                    By joining, you agree to our community guidelines and campus-only policy.
-                </p>
-            </div>
+            <p className="text-center text-xs text-muted-foreground mt-6 px-8 max-w-sm">
+                By joining, you agree to our community guidelines and campus-only policy.
+            </p>
         </div>
     )
+
 }

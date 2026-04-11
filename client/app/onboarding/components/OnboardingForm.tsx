@@ -1,6 +1,8 @@
 'use client'
 
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+
 import {
     Field,
     FieldError,
@@ -39,7 +41,7 @@ export const OnboardingForm = () => {
             collegeId: ""
         },
     })
-
+    console.log({ collegesResponse })
     const colleges = collegesResponse?.data || [];
 
     if (isLoadingColleges) {
@@ -52,19 +54,19 @@ export const OnboardingForm = () => {
     }
 
     return (
-        <CardContent>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FieldGroup>
+        <CardContent className="-mt-4">
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FieldGroup className="space-y-4">
                     <Controller
                         name="name"
                         control={form.control}
                         render={({ field, fieldState }) => (
                             <Field>
-                                <FieldLabel>Full Name</FieldLabel>
+                                <FieldLabel>Display Name</FieldLabel>
                                 <Input
                                     {...field}
                                     placeholder="Enter your full name"
-                                    type="text"
+                                    className="h-11"
                                 />
                                 {fieldState.invalid && (
                                     <FieldError errors={[fieldState.error]} />
@@ -81,8 +83,8 @@ export const OnboardingForm = () => {
                                 <FieldLabel>Username</FieldLabel>
                                 <Input
                                     {...field}
-                                    placeholder="Choose a unique username"
-                                    type="text"
+                                    placeholder="e.g. johndoe_23"
+                                    className="h-11"
                                 />
                                 {fieldState.invalid && (
                                     <FieldError errors={[fieldState.error]} />
@@ -96,12 +98,12 @@ export const OnboardingForm = () => {
                         control={form.control}
                         render={({ field, fieldState }) => (
                             <Field>
-                                <FieldLabel>Select Your Campus</FieldLabel>
-                                <Select 
-                                    onValueChange={field.onChange} 
+                                <FieldLabel>Identify Your Campus</FieldLabel>
+                                <Select
+                                    onValueChange={field.onChange}
                                     defaultValue={field.value}
                                 >
-                                    <SelectTrigger className="w-full">
+                                    <SelectTrigger className="w-full h-11">
                                         <SelectValue placeholder="Identify your campus" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -112,9 +114,12 @@ export const OnboardingForm = () => {
                                                 </SelectItem>
                                             ))
                                         ) : (
-                                            <p className="p-2 text-xs text-muted-foreground text-center">
-                                                No campuses found for your domain. Please contact admin.
-                                            </p>
+                                            <div className="p-4 text-center space-y-2">
+                                                <p className="text-sm font-medium text-destructive">No campuses found</p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    Your college domain is not registered yet. Please contact support.
+                                                </p>
+                                            </div>
                                         )}
                                     </SelectContent>
                                 </Select>
@@ -125,21 +130,34 @@ export const OnboardingForm = () => {
                         )}
                     />
 
-                    <Button 
-                        disabled={completeProfileMutation.isPending || colleges.length === 0} 
-                        className="w-full py-6 mt-4 transition-all duration-300 hover:scale-[1.01]"
+                    {colleges.length === 0 && !isLoadingColleges && (
+                        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+                            <p className="text-xs text-destructive text-center leading-relaxed">
+                                We couldn't find any registered campuses for your email domain. Please reach out to <span className="font-semibold underline cursor-pointer">support@peerlyy.com</span> to add your college.
+                            </p>
+                        </div>
+                    )}
+
+                    <Button
+                        type="submit"
+                        disabled={completeProfileMutation.isPending || (colleges.length === 0 && !isLoadingColleges)}
+                        className={cn(
+                            "w-full h-12 mt-2 font-bold text-base transition-all duration-300",
+                            (colleges.length === 0 && !isLoadingColleges) ? "opacity-50 grayscale" : "shadow-[0_0_20px_rgba(var(--primary),0.2)]"
+                        )}
                     >
                         {completeProfileMutation.isPending ? (
                             <div className="flex items-center gap-2">
                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                <span>Completing Profile...</span>
+                                <span>Setting up...</span>
                             </div>
                         ) : (
-                            "Start Exploring"
+                            "Start Peerlyy"
                         )}
                     </Button>
                 </FieldGroup>
             </form>
         </CardContent>
+
     )
 }
