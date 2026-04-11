@@ -37,6 +37,42 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
+export const optionalAuthenticate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const authHeader = req.headers.authorization;
+        let token;
+
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.split(" ")[1];
+        } else if (req.cookies.accessToken) {
+            token = req.cookies.accessToken;
+        }
+
+        if (!token) {
+            return next();
+        }
+
+        try {
+            const decoded = verifyAccessToken(token) as JwtPayload;
+
+            if (decoded && decoded.userId) {
+                req.user = {
+                    userId: decoded.userId,
+                    role: decoded.role,
+                };
+            }
+        } catch (error) {
+            // Silently fail if token is invalid - just don't set req.user
+            console.error("Optional auth token verification failed:", error);
+        }
+
+        next();
+    } catch (error) {
+        // We still call next() to ensure the request continues even if something goes wrong in the logic
+        next();
+    }
+};
+
 export const authorize = (roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!req.user || !roles.includes(req.user.role)) {

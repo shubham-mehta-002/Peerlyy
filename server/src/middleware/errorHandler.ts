@@ -25,12 +25,24 @@ export const errorHandler = (
     // 2. Handle Zod Validation Errors
     else if (err instanceof ZodError) {
         statusCode = HTTP_STATUS.BAD_REQUEST;
-        message = "Validation Error";
-        errors = err.issues.map(issue => ({
-            field: issue.path.join('.'),
-            message: issue.message
-        }));
+        
+        // Use the first validation error as the main message
+        const firstIssue = err.issues[0];
+        message = firstIssue ? firstIssue.message : "Validation Error";
+
+        // Map errors but strip top-level prefixes like 'body' or 'query'
+        errors = err.issues.map(issue => {
+            const path = [...issue.path];
+            if (['body', 'query', 'params', 'cookies'].includes(path[0] as string)) {
+                path.shift();
+            }
+            return {
+                field: path.join('.') || "general",
+                message: issue.message
+            };
+        });
     }
+
 
     // 3. Handle Prisma Database Errors
     else if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -66,6 +78,10 @@ export const errorHandler = (
         message = err.message || 'Something went wrong';
     }
 
+    // Log the error for internal tracking
+    console.error(`[Error Handler] ${new Date().toISOString()}:`, err);
+
     // Send Response using formatted ApiResponse
+
     ApiResponse.error(res, message, statusCode, errors);
 };
