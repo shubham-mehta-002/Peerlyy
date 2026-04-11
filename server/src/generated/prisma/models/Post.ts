@@ -43,6 +43,7 @@ export type PostMinAggregateOutputType = {
   visibility: $Enums.PostVisibility | null
   isCollegeOnly: boolean | null
   score: number | null
+  isAnonymous: boolean | null
   authorId: string | null
   collegeId: string | null
   createdAt: Date | null
@@ -58,6 +59,7 @@ export type PostMaxAggregateOutputType = {
   visibility: $Enums.PostVisibility | null
   isCollegeOnly: boolean | null
   score: number | null
+  isAnonymous: boolean | null
   authorId: string | null
   collegeId: string | null
   createdAt: Date | null
@@ -73,6 +75,7 @@ export type PostCountAggregateOutputType = {
   visibility: number
   isCollegeOnly: number
   score: number
+  isAnonymous: number
   authorId: number
   collegeId: number
   createdAt: number
@@ -98,6 +101,7 @@ export type PostMinAggregateInputType = {
   visibility?: true
   isCollegeOnly?: true
   score?: true
+  isAnonymous?: true
   authorId?: true
   collegeId?: true
   createdAt?: true
@@ -113,6 +117,7 @@ export type PostMaxAggregateInputType = {
   visibility?: true
   isCollegeOnly?: true
   score?: true
+  isAnonymous?: true
   authorId?: true
   collegeId?: true
   createdAt?: true
@@ -128,6 +133,7 @@ export type PostCountAggregateInputType = {
   visibility?: true
   isCollegeOnly?: true
   score?: true
+  isAnonymous?: true
   authorId?: true
   collegeId?: true
   createdAt?: true
@@ -230,6 +236,7 @@ export type PostGroupByOutputType = {
   visibility: $Enums.PostVisibility
   isCollegeOnly: boolean
   score: number
+  isAnonymous: boolean
   authorId: string
   collegeId: string | null
   createdAt: Date
@@ -268,6 +275,7 @@ export type PostWhereInput = {
   visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFilter<"Post"> | boolean
   score?: Prisma.IntFilter<"Post"> | number
+  isAnonymous?: Prisma.BoolFilter<"Post"> | boolean
   authorId?: Prisma.StringFilter<"Post"> | string
   collegeId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
@@ -287,6 +295,7 @@ export type PostOrderByWithRelationInput = {
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  isAnonymous?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -309,6 +318,7 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFilter<"Post"> | boolean
   score?: Prisma.IntFilter<"Post"> | number
+  isAnonymous?: Prisma.BoolFilter<"Post"> | boolean
   authorId?: Prisma.StringFilter<"Post"> | string
   collegeId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
@@ -328,6 +338,7 @@ export type PostOrderByWithAggregationInput = {
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  isAnonymous?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -351,6 +362,7 @@ export type PostScalarWhereWithAggregatesInput = {
   visibility?: Prisma.EnumPostVisibilityWithAggregatesFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
   score?: Prisma.IntWithAggregatesFilter<"Post"> | number
+  isAnonymous?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
   authorId?: Prisma.StringWithAggregatesFilter<"Post"> | string
   collegeId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
@@ -366,6 +378,7 @@ export type PostCreateInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -383,6 +396,7 @@ export type PostUncheckedCreateInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -400,6 +414,7 @@ export type PostUpdateInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -417,6 +432,7 @@ export type PostUncheckedUpdateInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -434,6 +450,7 @@ export type PostCreateManyInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -449,6 +466,7 @@ export type PostUpdateManyMutationInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -462,6 +480,7 @@ export type PostUncheckedUpdateManyInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -487,6 +506,7 @@ export type PostCountOrderByAggregateInput = {
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  isAnonymous?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -506,6 +526,7 @@ export type PostMaxOrderByAggregateInput = {
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  isAnonymous?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -521,6 +542,7 @@ export type PostMinOrderByAggregateInput = {
   visibility?: Prisma.SortOrder
   isCollegeOnly?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  isAnonymous?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   collegeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -673,6 +695,7 @@ export type PostCreateWithoutCollegeInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -689,6 +712,7 @@ export type PostUncheckedCreateWithoutCollegeInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -734,6 +758,7 @@ export type PostScalarWhereInput = {
   visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFilter<"Post"> | boolean
   score?: Prisma.IntFilter<"Post"> | number
+  isAnonymous?: Prisma.BoolFilter<"Post"> | boolean
   authorId?: Prisma.StringFilter<"Post"> | string
   collegeId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
@@ -749,6 +774,7 @@ export type PostCreateWithoutAuthorInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   college?: Prisma.CollegeCreateNestedOneWithoutPostsInput
@@ -765,6 +791,7 @@ export type PostUncheckedCreateWithoutAuthorInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   collegeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -807,6 +834,7 @@ export type PostCreateWithoutVotesInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -823,6 +851,7 @@ export type PostUncheckedCreateWithoutVotesInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -855,6 +884,7 @@ export type PostUpdateWithoutVotesInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -871,6 +901,7 @@ export type PostUncheckedUpdateWithoutVotesInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -887,6 +918,7 @@ export type PostCreateWithoutCommentsInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -903,6 +935,7 @@ export type PostUncheckedCreateWithoutCommentsInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   authorId: string
   collegeId?: string | null
   createdAt?: Date | string
@@ -935,6 +968,7 @@ export type PostUpdateWithoutCommentsInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -951,6 +985,7 @@ export type PostUncheckedUpdateWithoutCommentsInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -967,6 +1002,7 @@ export type PostCreateManyCollegeInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -981,6 +1017,7 @@ export type PostUpdateWithoutCollegeInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -997,6 +1034,7 @@ export type PostUncheckedUpdateWithoutCollegeInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1013,6 +1051,7 @@ export type PostUncheckedUpdateManyWithoutCollegeInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1027,6 +1066,7 @@ export type PostCreateManyAuthorInput = {
   visibility?: $Enums.PostVisibility
   isCollegeOnly?: boolean
   score?: number
+  isAnonymous?: boolean
   collegeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1041,6 +1081,7 @@ export type PostUpdateWithoutAuthorInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   college?: Prisma.CollegeUpdateOneWithoutPostsNestedInput
@@ -1057,6 +1098,7 @@ export type PostUncheckedUpdateWithoutAuthorInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1073,6 +1115,7 @@ export type PostUncheckedUpdateManyWithoutAuthorInput = {
   visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
   isCollegeOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   score?: Prisma.IntFieldUpdateOperationsInput | number
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
   collegeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1127,6 +1170,7 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   visibility?: boolean
   isCollegeOnly?: boolean
   score?: boolean
+  isAnonymous?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
@@ -1147,6 +1191,7 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   visibility?: boolean
   isCollegeOnly?: boolean
   score?: boolean
+  isAnonymous?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
@@ -1164,6 +1209,7 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   visibility?: boolean
   isCollegeOnly?: boolean
   score?: boolean
+  isAnonymous?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
@@ -1181,13 +1227,14 @@ export type PostSelectScalar = {
   visibility?: boolean
   isCollegeOnly?: boolean
   score?: boolean
+  isAnonymous?: boolean
   authorId?: boolean
   collegeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "caption" | "mediaUrl" | "mediaFileId" | "mediaType" | "visibility" | "isCollegeOnly" | "score" | "authorId" | "collegeId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "caption" | "mediaUrl" | "mediaFileId" | "mediaType" | "visibility" | "isCollegeOnly" | "score" | "isAnonymous" | "authorId" | "collegeId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   college?: boolean | Prisma.Post$collegeArgs<ExtArgs>
@@ -1221,6 +1268,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     visibility: $Enums.PostVisibility
     isCollegeOnly: boolean
     score: number
+    isAnonymous: boolean
     authorId: string
     collegeId: string | null
     createdAt: Date
@@ -1660,6 +1708,7 @@ export interface PostFieldRefs {
   readonly visibility: Prisma.FieldRef<"Post", 'PostVisibility'>
   readonly isCollegeOnly: Prisma.FieldRef<"Post", 'Boolean'>
   readonly score: Prisma.FieldRef<"Post", 'Int'>
+  readonly isAnonymous: Prisma.FieldRef<"Post", 'Boolean'>
   readonly authorId: Prisma.FieldRef<"Post", 'String'>
   readonly collegeId: Prisma.FieldRef<"Post", 'String'>
   readonly createdAt: Prisma.FieldRef<"Post", 'DateTime'>

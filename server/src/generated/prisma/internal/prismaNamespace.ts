@@ -945,6 +945,7 @@ export const PostScalarFieldEnum = {
   visibility: 'visibility',
   isCollegeOnly: 'isCollegeOnly',
   score: 'score',
+  isAnonymous: 'isAnonymous',
   authorId: 'authorId',
   collegeId: 'collegeId',
   createdAt: 'createdAt',

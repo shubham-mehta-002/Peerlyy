@@ -119,6 +119,8 @@ model Post {
   isCollegeOnly Boolean        @default(false)
   score         Int            @default(0)
 
+  isAnonymous   Boolean        @default(false)
+
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
